@@ -1,11 +1,13 @@
-import com.sun.source.tree.LambdaExpressionTree;
-
-import javax.swing.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Library {
+public class Main {
+    public static void main(String[] args) {
+//        Main method so maunal testing can be done
+    }
+}
+
+class Library {
     private List<Book> allBooksInLibrary;
     private List<Book> loanedBooks;
     private List<Double> memberIDs;
@@ -21,12 +23,46 @@ public class Library {
 }
 
 class Book {
-    private String title;
+    private String name;
     private String author;
+    private int year;
+    private int ISBN;
+    private int bookID;
+    private boolean isAvailable;
+    private String genre;
 
-    public Book(String title, String author) {
-        this.title = title;
+    public Book(String name, String author, int year, int ISBN, int bookID, boolean isAvailable, String genre) {
+        this.name = name;
         this.author = author;
+        this.year = year;
+        this.ISBN = ISBN;
+        this.bookID = bookID;
+        this.isAvailable = isAvailable;
+        this.genre = genre;
+    }
+
+    public boolean checkAvailability() {
+        return isAvailable;
+    }
+
+    public void updateBook(String name, String author, int year, int ISBN, int bookID, boolean isAvailable, String genre) {
+        this.name = name;
+        this.author = author;
+        this.year = year;
+        this.ISBN = ISBN;
+        this.bookID = bookID;
+        this.isAvailable = isAvailable;
+        this.genre = genre;
+    }
+
+    public void getBookInfo(){
+        System.out.println("Name: " + name);
+        System.out.println("Author: " + author);
+        System.out.println("Year: " + year);
+        System.out.println("ISBN: " + ISBN);
+        System.out.println("Book ID: " + bookID);
+        System.out.println("Available: " + isAvailable);
+        System.out.println("Genre: " + genre);
     }
 }
 
@@ -82,3 +118,4 @@ class Member{
         }
     }
 }
+
