@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,8 +21,8 @@ class Library {
     // i think we should implement this as a hashmap of books and the member checking it out
     // this makes it easier to access these logically linked values
     private HashMap<Book, Member> loanedBooks;
-
     private List<Integer> memberIDs; // list of Unique Integer values denoting each member
+    private List<Member> allMembers;//list of all members in the Library
 
     // constructor for a library object
     public Library() {
@@ -36,27 +37,59 @@ class Library {
     }
 
     // removes a Book from allBooksInLibrary
-    public void removeBook(Book book) {allBooksInLibrary.remove(book);}
+    public void removeBook(Book book) {
+        allBooksInLibrary.remove(book);
+    }
+
+    // generates a new unique bookID to add a book to the library
+    public int generateBookID () {
+        return allBooksInLibrary.size() + 1;
+    }
 
     // adds a Book, Member pair to loanedBooks HashMap
     // adds a Book to the Member's BorrowedBooksList
     public void checkoutBook(Book book, Member member) {
-        loanedBooks.put(book,member);
+        loanedBooks.put(book, member);
         member.addBorrowedBook(book);
+    }
+
+    // removes a Book, Member pair from the loaned books HashMap
+    // removes a Book from the member's LoanedBooksList
+    public void returnBook(Book book) {
+        Member member = loanedBooks.remove(book);
+        member.removeBorrowedBook(book);
     }
 
     // creates a member object wih specified name and unique member ID
     // adds new member's ID to memberID list
-    public void addMember(String name, String email) {
+    public Member addMember(String name, String email) {
         Member newMember = new Member(name, email, (int) (memberIDs.size() + 1));
         memberIDs.add(newMember.getMemberId());
+        allMembers.add(newMember);
+        return newMember;
     }
 
     // removes a member's ID from the memberID list
     // not sure what else to do for this
     // maybe there will be a list of members stored somewhere to remove this from??
+    // we should add logging or some verification type for this
     public void removeMember(Member member) {
+        if(member == null) {
+            System.out.println("Attempted to remove a null Member");
+            return;
+        }
         memberIDs.remove(member.getMemberId());
+        allMembers.remove(member);
+    }
+
+    // finds member object from allMember list given name (last, first) and memberID
+    public Member getMember(String memberName, int memberID) {
+        Member member = allMembers.get(memberID);
+        if(member.getName().equals(memberName)) {
+            return member;
+        }
+        System.out.println("Member not found");
+        return null;
     }
 
     // returns if a book object is available
@@ -77,20 +110,18 @@ class Library {
     // Not sure what this is intended to do
     // does it like print all member info, or just names
     // or does it return a list of Member objects, idk
-    public void getAllMembers() {}
-
-    // takes a book's name and returns the corresponding Book object
-    public void findBookIdByName(String bookName) {
-        // idk how to implement rn
-        // might involve using the list of all books and iterating
-        // through it until finding the object with a matching name
+    public void getAllMembers() {
     }
 
-    // removes a Book, Member pair from the loaned books HashMap
-    // removes a Book from the member's LoanedBooksList
-    public void returnBook(Book book) {
-        Member member = loanedBooks.remove(book);
-        member.removeBorrowedBook(book);
+    // takes a book's name and returns the corresponding Book object
+    public Book findBookIdByName(String title) {
+        for (Book book : allBooksInLibrary) {
+            if(book.getBookInfo().get(0).equals(title)) {
+                return(book);
+            }
+        }
+        System.out.println("Book" + title + "not found");
+        return null;
     }
 }
 
@@ -107,38 +138,41 @@ class Book {
     private String genre; //genre of the book
 
     // constructor for a Book object
-    public Book(String name, String author, int year, int ISBN, int bookID, boolean isAvailable, String genre) {
+    // creates its own unique bookID so librarian doesn't need to worry about that
+    public Book(String name, String author, int year, int ISBN, boolean isAvailable, String genre, Library library) {
         this.name = name;
         this.author = author;
         this.year = year;
         this.ISBN = ISBN;
-        this.bookID = bookID;
         this.isAvailable = isAvailable;
         this.genre = genre;
+        this.bookID = library.generateBookID();
     }
 
     // returns if a book is available given a Book object
     // could MAYBE be modified to only require a book's name instead of object
-    public boolean checkAvailability() {return isAvailable;}
+    public boolean checkAvailability() {
+        return isAvailable;
+    }
 
     // changes a book's values to the new values
     // could be changed to have nulls for parameters to not update those things
-    public void updateBook(String name, String author, int year, int ISBN, int bookID, boolean isAvailable, String genre) {
+    // bookID should not be manually changeable
+    public void updateBook(String name, String author, int year, int ISBN, boolean isAvailable, String genre) {
         this.name = name;
         this.author = author;
         this.year = year;
         this.ISBN = ISBN;
-        this.bookID = bookID;
         this.isAvailable = isAvailable;
         this.genre = genre;
     }
 
     // creates a String of a Book's info and prints it
     // returns a list of book info points
-    public List<String> getBookInfo(){
+    public List<String> getBookInfo() {
         String bookInfoString = "";
         bookInfoString += "Name: " + name + "\n";
-        bookInfoString+= "Author: " + author + "\n";
+        bookInfoString += "Author: " + author + "\n";
         bookInfoString += "Year: " + year + "\n";
         bookInfoString += "ISBN: " + ISBN + "\n";
         bookInfoString += "Book ID: " + bookID + "\n";
@@ -157,7 +191,7 @@ class Book {
     }
 }
 
-class Member{
+class Member {
     private String name; // member's Legal first and last name ("Reed, Steven")
     private String email; // member's preferred email address ("sreed43@lsu.edu")
     private Integer memberID; // unique integer ID for each member object
@@ -173,7 +207,7 @@ class Member{
 
     // prints the info of a Member
     // I think this should be modified to print a member's info and then return it
-    public void printMemberInfo(){
+    public void printMemberInfo() {
         System.out.println("Name: " + name);
         System.out.println("Email: " + email);
         System.out.println("MemberID: " + memberID);
@@ -185,14 +219,18 @@ class Member{
         return this.memberID;
     }
 
+    // returns a member's name
+    public String getName() {
+        return this.name;
+    }
+
     // prints then returns a Member's borrowed book list
     private List<Book> getBorrowedBookList() {
-        if(borrowedBookList == null) {
+        if (borrowedBookList == null) {
             return null;
-        }
-        else{
+        } else {
             System.out.println(name + "'s borrowed book list:");
-            for(Book book : borrowedBookList){
+            for (Book book : borrowedBookList) {
                 book.getBookInfo();
             }
             System.out.println();
@@ -208,21 +246,120 @@ class Member{
 
     // updates a member's info to the specified values
     // could be modified to accept nulls for unchanging values
-    public void updateMemberInfo(String name, String email, Integer memberID) {
+    // member ID should not be changeable
+    public void updateMemberInfo(String name, String email) {
         this.name = name;
         this.email = email;
-        this.memberID = memberID;
     }
 
     // removes a book from a member's borrowed book list
     // used when Library class returns a book
     public void removeBorrowedBook(Book book) {
-        if(borrowedBookList.contains(book)){
+        if (borrowedBookList.contains(book)) {
             borrowedBookList.remove(book);
-        }
-        else{
+        } else {
             System.out.println("user " + name + " has not borrowed " + book);
         }
     }
 }
 
+class Interface {
+    // only one function that has a loop of looking for commands and executing them
+    public void doInterface(Library library) {
+        Scanner scanner = new Scanner(System.in);
+        String input;
+        String bookAuthor;
+        String bookName;
+        String bookGenre;
+        int bookYear;
+        int bookISBN;
+        Book book;
+        String memberName;
+        String memberEmail;
+        Member member;
+
+        System.out.println("Welcome to the Library CLI! Type 'exit' to quit.");
+        System.out.println("Type 'help' to see all commands.");
+
+        while (true) {
+            System.out.print("> ");
+            input = scanner.nextLine().trim();
+
+            if (input.equalsIgnoreCase("exit")) {
+                System.out.println("Goodbye!");
+                break;
+            }
+
+            switch (input.toLowerCase()) {
+                case "hello":
+                    System.out.println("Hi there!");
+                    break;
+                case "help":
+                    System.out.println("Available commands: help, exit, ....");
+                    break;
+                case "add_book":
+                    // asks for all info about a book ands adds it to library book list
+                    // always sets new book to available and bookID is auto-generated by Book constructor
+                    System.out.println("Enter Book Title");
+                    input = scanner.nextLine().trim();
+                    bookName = input.toLowerCase();
+                    System.out.println("Enter Book Author");
+                    input = scanner.nextLine().trim();
+                    bookAuthor = input.toLowerCase();
+                    System.out.println("Enter Book Year");
+                    input = scanner.nextLine().trim();
+                    bookYear = Integer.parseInt(input);
+                    System.out.println("Enter Book ISBN");
+                    input = scanner.nextLine().trim();
+                    bookISBN = Integer.parseInt(input);
+                    System.out.println("Enter Book Genre");
+                    input = scanner.nextLine().trim();
+                    bookGenre = input.toLowerCase();
+                    book = new Book(bookName, bookAuthor, bookYear,bookISBN, true, bookGenre, library);
+                    library.addBook(book);
+                    break;
+                case "remove_book":
+                    // removes a book with a given title from the library
+                    System.out.println("Enter Book Title");
+                    input = scanner.nextLine().trim();
+                    String title = input.toLowerCase();
+                    book = library.findBookIdByName(title);
+                    library.removeBook(book);
+                    break;
+                case "update_book":
+                    // updates a given books info in the library
+                    break;
+                case "add_member":
+                    // asks for all necessary member info (name, email)
+                    // constructor auto-generates memberID and empty borrowedBookList
+                    System.out.println("Enter Member Name (Last, First)");
+                    memberName = scanner.nextLine().trim();
+                    System.out.println("Enter Member email");
+                    memberEmail = scanner.nextLine().trim(); // we could maybe do a check for legit emails later?
+                    member = library.addMember(memberName, memberEmail);
+                    member.printMemberInfo();
+                    break;
+                case "remove_member":
+                    // asks for a member's name and ID
+                    // removes that member from the memberID list and allMembers list
+                    System.out.println("Enter Member Name (Last, First)");
+                    memberName = scanner.nextLine().trim();
+                    System.out.println("Enter Member ID");
+                    int memberID = Integer.parseInt(scanner.nextLine().trim());
+                    member = library.getMember(memberName,memberID);
+                    library.removeMember(member);
+                    break;
+                case "checkout_book":
+                    break;
+                case "return_book":
+                    break;
+                case "print_member_info":
+                    break;
+                default:
+                    System.out.println("Unknown command: " + input);
+            }
+        }
+
+        scanner.close();
+    }
+}
