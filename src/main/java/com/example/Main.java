@@ -54,7 +54,7 @@ class Library {
     public void checkoutBook(Book book, Member member) {
         loanedBooks.put(book, member);
         member.addBorrowedBook(book);
-        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false), Optional.empty()); // 👈 add this line
+        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false), Optional.empty()); 
     }
 
     // removes a Book, Member pair from the loaned books HashMap

@@ -25,7 +25,7 @@ public class MemberTest {
     @BeforeEach
     void setup() {
         library = mock(Library.class);
-        // its just as easy form me to use a real book object
+        // its just as easy for me to use a real book object
         book = new Book(
                 "The Lion, The Witch, and The Wardrobe",
                 "CS Lewis",
@@ -62,5 +62,74 @@ public class MemberTest {
     }
 
     // Testing updateMemberInfo
-    
+    @Test
+    void updateMemberInfo() {
+        member.updateMemberInfo("Miles, Joshua", "jmiles16@lsu.edu");
+        assertEquals("Miles, Joshua", member.getName());
+        assertEquals("jmiles16@lsu.edu", member.getEmail());
+    }
+
+    // Testing get borrowed Book List
+    @Test
+    void getBorrowedBooks() {
+        Book book1 = new Book(
+                "The Hobbit",
+                "J.R.R. Tolkien",
+                1937,
+                "9780547928227",
+                "Fantasy",
+                library
+        );
+
+        Book book2 = new Book(
+                "To Kill a Mockingbird",
+                "Harper Lee",
+                1960,
+                "9780060935467",
+                "Fiction",
+                library
+        );
+
+        Book book3 = new Book(
+                "1984",
+                "George Orwell",
+                1949,
+                "9780451524935",
+                "Dystopian",
+                library
+        );
+
+        Book book4 = new Book(
+                "Pride and Prejudice",
+                "Jane Austen",
+                1813,
+                "9780141439518",
+                "Romance",
+                library
+        );
+
+        Book book5 = new Book(
+                "A Brief History of Time",
+                "Stephen Hawking",
+                1988,
+                "9780553380163",
+                "Science",
+                library
+        );
+
+        member.addBorrowedBook(book);
+        member.addBorrowedBook(book1);
+        member.addBorrowedBook(book2);
+        member.addBorrowedBook(book3);
+        member.addBorrowedBook(book4);
+        member.addBorrowedBook(book5);
+
+        List<Book> borrowedBookList = member.getBorrowedBookList();
+        assertEquals(book, borrowedBookList.get(0));
+        assertEquals(book1, borrowedBookList.get(1));
+        assertEquals(book2, borrowedBookList.get(2));
+        assertEquals(book3, borrowedBookList.get(3));
+        assertEquals(book4, borrowedBookList.get(4));
+        assertEquals(book5, borrowedBookList.get(5));
+    }
 }
