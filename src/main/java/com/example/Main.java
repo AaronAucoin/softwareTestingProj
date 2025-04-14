@@ -436,7 +436,7 @@ class Interface {
                                 book.getBookInfo();
                                 break;
                             default:
-                                System.out.println("Invalid option.");
+                                System.out.println("Invalid option " + input + ".");
                             }
                         }
                     }

@@ -58,6 +58,7 @@ public class LibraryTest {
 
         library.returnBook(book);
         // Again, `isAvailable` should be updated but isn't. Fix this in your main logic.
+        // whoever wrote this comment could have fixed this lol
     }
 }
 
