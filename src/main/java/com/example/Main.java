@@ -296,7 +296,6 @@ class Interface {
             input = scanner.nextLine().trim();
 
 
-
             if (input.equalsIgnoreCase("10") || input.equalsIgnoreCase("exit")) {
                 System.out.println("Goodbye!");
                 break;
@@ -308,7 +307,7 @@ class Interface {
                     printMenu();
                     break;
                 case "9":
-                    System.out.println("choose number to select option");
+                    System.out.println("Choose number to select option:");
                     System.out.println("+-----------------------+");
                     System.out.println("1. Add Book");
                     System.out.println("2. Remove Book");
@@ -328,17 +327,22 @@ class Interface {
                     System.out.println("Enter Book Title");
                     input = scanner.nextLine().trim();
                     bookName = input.toLowerCase();
+
                     System.out.println("Enter Book Author");
                     input = scanner.nextLine().trim();
                     bookAuthor = input.toLowerCase();
+
                     System.out.println("Enter Book Year");
                     input = scanner.nextLine().trim();
                     bookYear = Integer.parseInt(input);
+
                     System.out.println("Enter Book ISBN");
                     bookISBN = scanner.nextLine().trim();
+
                     System.out.println("Enter Book Genre");
                     input = scanner.nextLine().trim();
                     bookGenre = input.toLowerCase();
+                    
                     book = new Book(bookName, bookAuthor, bookYear,bookISBN, bookGenre, library);
                     library.addBook(book);
                     printMenu();
@@ -370,6 +374,7 @@ class Interface {
                         System.out.println("9. Exit");
                         System.out.println("+----------------------+");
                         System.out.println(">");
+                        
                         input = scanner.nextLine().trim();
                         if(input.equalsIgnoreCase("8")) {
                             break;
@@ -453,15 +458,50 @@ class Interface {
                     printMenu();
                     break;
                 case "6":
+                    System.out.println("Enter Book Title:");
+                    bookName = scanner.nextLine().trim().toLowerCase();
+                    book = library.findBookIdByName(bookName);
+                    System.out.println("Enter Member ID:");
+                    int memId = Integer.parseInt(scanner.nextLine().trim());
+                    member = library.getMember(null, memId);
+                
+                    if (book != null && member != null && book.checkAvailability()) {
+                        library.checkoutBook(book, member);
+                        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false), Optional.empty());
+                        System.out.println("Book checked out successfully.");
+                    } else {
+                        System.out.println("Error: Book not found, unavailable, or member ID invalid.");
+                    }
                     printMenu();
                     break;
+                
                 case "7":
+                    System.out.println("Enter Book Title:");
+                    bookName = scanner.nextLine().trim().toLowerCase();
+                    book = library.findBookIdByName(bookName);
+                
+                    if (book != null) {
+                        library.returnBook(book);
+                        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(true), Optional.empty());
+                        System.out.println("Book returned successfully.");
+                    } else {
+                        System.out.println("Book not found.");
+                    }
                     printMenu();
                     break;
+                
                 case "8":
-
+                    System.out.println("Enter Member ID:");
+                    int id = Integer.parseInt(scanner.nextLine().trim());
+                    member = library.getMember(null, id);
+                    if (member != null) {
+                        member.printMemberInfo();
+                    } else {
+                        System.out.println("Member not found.");
+                    }
                     printMenu();
                     break;
+                
                 default:
                     System.out.println("Unknown command: " + input);
             }
