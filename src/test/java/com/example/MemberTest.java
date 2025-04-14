@@ -25,7 +25,7 @@ public class MemberTest {
     @BeforeEach
     void setup() {
         library = mock(Library.class);
-        // its just as easy form me to use a real book object
+        // its just as easy for me to use a real book object
         book = new Book(
                 "The Lion, The Witch, and The Wardrobe",
                 "CS Lewis",
@@ -62,5 +62,5 @@ public class MemberTest {
     }
 
     // Testing updateMemberInfo
-    
+
 }
