@@ -286,10 +286,13 @@ class Interface {
 
         System.out.println("Welcome to the Library CLI! Type 'exit' to quit.");
         System.out.println("Type 'help' to see all commands.");
+        printMenu();
 
         while (true) {
             System.out.print("> ");
             input = scanner.nextLine().trim();
+
+
 
             if (input.equalsIgnoreCase("10") || input.equalsIgnoreCase("exit")) {
                 System.out.println("Goodbye!");
@@ -299,9 +302,11 @@ class Interface {
             switch (input.toLowerCase()) {
                 case "hello":
                     System.out.println("Hi there!");
+                    printMenu();
                     break;
                 case "9":
                     System.out.println("choose number to select option");
+                    System.out.println("+-----------------------+");
                     System.out.println("1. Add Book");
                     System.out.println("2. Remove Book");
                     System.out.println("3. Update Book");
@@ -312,6 +317,7 @@ class Interface {
                     System.out.println("8. Print Member Info");
                     System.out.println("9. Help");
                     System.out.println("10. Exit");
+                    System.out.println("+-----------------------+");
                     break;
                 case "1":
                     // asks for all info about a book ands adds it to library book list
@@ -333,6 +339,7 @@ class Interface {
                     bookGenre = input.toLowerCase();
                     book = new Book(bookName, bookAuthor, bookYear,bookISBN, true, bookGenre, library);
                     library.addBook(book);
+                    printMenu();
                     break;
                 case "2":
                     // removes a book with a given title from the library
@@ -341,6 +348,7 @@ class Interface {
                     String title = input.toLowerCase();
                     book = library.findBookIdByName(title);
                     library.removeBook(book);
+                    printMenu();
                     break;
                 case "3":
                     // updates a given books info in the library
@@ -362,7 +370,7 @@ class Interface {
                         boolean isAvailable = Boolean.parseBoolean(scanner.nextLine());
                         book.updateBook(bookName, bookAuthor, bookYear, bookISBN, isAvailable, bookGenre);
                     }
-
+                    printMenu();
                     break;
                 case "4":
                     // asks for all necessary member info (name, email)
@@ -373,6 +381,7 @@ class Interface {
                     memberEmail = scanner.nextLine().trim(); // we could maybe do a check for legit emails later?
                     member = library.addMember(memberName, memberEmail);
                     member.printMemberInfo();
+                    printMenu();
                     break;
                 case "5":
                     // asks for a member's name and ID
@@ -383,18 +392,39 @@ class Interface {
                     int memberID = Integer.parseInt(scanner.nextLine().trim());
                     member = library.getMember(memberName,memberID);
                     library.removeMember(member);
+                    printMenu();
                     break;
                 case "6":
+                    printMenu();
                     break;
                 case "7":
+                    printMenu();
                     break;
                 case "8":
+
+                    printMenu();
                     break;
                 default:
                     System.out.println("Unknown command: " + input);
             }
         }
 
+
         scanner.close();
     }
+        public void printMenu(){
+            System.out.println("choose number to select option");
+            System.out.println("+-----------------------+");
+            System.out.println("1. Add Book");
+            System.out.println("2. Remove Book");
+            System.out.println("3. Update Book");
+            System.out.println("4. Add Member");
+            System.out.println("5. Remove Member");
+            System.out.println("6. Checkout Book");
+            System.out.println("7. Return Book");
+            System.out.println("8. Print Member Info");
+            System.out.println("9. Help");
+            System.out.println("10. Exit");
+            System.out.println("+-----------------------+");
+        }
 }
