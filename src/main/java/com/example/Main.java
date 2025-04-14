@@ -54,6 +54,7 @@ class Library {
     public void checkoutBook(Book book, Member member) {
         loanedBooks.put(book, member);
         member.addBorrowedBook(book);
+        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false), Optional.empty()); // 👈 add this line
     }
 
     // removes a Book, Member pair from the loaned books HashMap
@@ -87,9 +88,10 @@ class Library {
 
     // finds member object from allMember list given name (last, first) and memberID
     public Member getMember(String memberName, int memberID) {
-        Member member = allMembers.get(memberID);
-        if(member.getName().equals(memberName)) {
-            return member;
+        for (Member member : allMembers) {
+            if (member.getMemberId() == memberID && member.getName().equals(memberName)) {
+                return member;
+            }
         }
         System.out.println("Member not found");
         return null;
@@ -119,7 +121,7 @@ class Library {
     // takes a book's name and returns the corresponding Book object
     public Book findBookIdByName(String title) {
         for (Book book : allBooksInLibrary) {
-            if(book.getBookInfo().get(0).equals(title)) {
+            if(book.getBookInfo().get(0).equalsIgnoreCase(title)) {
                 return(book);
             }
         }
@@ -219,7 +221,7 @@ class Member {
         System.out.println("Name: " + name);
         System.out.println("Email: " + email);
         System.out.println("MemberID: " + memberID);
-        getBorrowedBookList();
+        printBorrowedBooks();
     }
 
     // returns a Member's Identification number
@@ -232,20 +234,22 @@ class Member {
         return this.name;
     }
 
-    // prints then returns a Member's borrowed book list
-    private List<Book> getBorrowedBookList() {
-        if (borrowedBookList == null) {
-            return null;
-        } else {
-            System.out.println(name + "'s borrowed book list:");
-            for (Book book : borrowedBookList) {
-                book.getBookInfo();
-            }
-            System.out.println();
-            return borrowedBookList;
-        }
-    }
 
+
+    // checks if a member has borrowed a book
+    public boolean hasBorrowed(Book book) {
+        return borrowedBookList.contains(book);
+    }
+    public void printBorrowedBooks() {
+        System.out.println(name + "'s borrowed book list:");
+        for (Book book : borrowedBookList) {
+            book.getBookInfo();
+        }
+        System.out.println();
+    }
+    public List<Book> getBorrowedBooks() {
+        return new ArrayList<>(borrowedBookList); 
+    }
     // adds a book to a Member's borrowed book list
     // used when Library class checks out a book
     public List<Book> addBorrowedBook(Book book) {
