@@ -232,8 +232,11 @@ class Member {
         return this.name;
     }
 
+    // returns a member's email
+    public String getEmail() { return this.email; }
+
     // prints then returns a Member's borrowed book list
-    private List<Book> getBorrowedBookList() {
+    public List<Book> getBorrowedBookList() {
         if (borrowedBookList == null) {
             return null;
         } else {
