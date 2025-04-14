@@ -342,7 +342,7 @@ class Interface {
                     System.out.println("Enter Book Genre");
                     input = scanner.nextLine().trim();
                     bookGenre = input.toLowerCase();
-                    
+
                     book = new Book(bookName, bookAuthor, bookYear,bookISBN, bookGenre, library);
                     library.addBook(book);
                     printMenu();
@@ -361,7 +361,9 @@ class Interface {
                     System.out.println("Enter Book Title");
                     String updateTitle = scanner.nextLine().trim().toLowerCase();
                     book = library.findBookIdByName(updateTitle);
-                    if (book != null) { while(true) {
+                    if (book != null) { 
+                        while(true) {
+                        // asks for which info to update and updates it
                         System.out.println("What would you like to update?");
                         System.out.println("1. Update Title");
                         System.out.println("2. Update Author");
@@ -376,40 +378,42 @@ class Interface {
                         System.out.println(">");
                         
                         input = scanner.nextLine().trim();
-                        if(input.equalsIgnoreCase("8")) {
+                        if(input.equalsIgnoreCase("9")) {
                             break;
                         }
+
+                        // updates the book with the new info
                         switch (input.toLowerCase()) {
                             case "1":
-                                System.out.println("Enter New Book Title");
+                                System.out.println("Enter New Book Title:");
                                 title = scanner.nextLine().trim();
                                 book.updateBook(Optional.of(title), Optional.empty(),
                                         Optional.empty(),Optional.empty(),
                                         Optional.empty(),Optional.empty());
                                 break;
                             case "2":
-                                System.out.println("Enter New Book Author");
+                                System.out.println("Enter New Book Author:");
                                 bookAuthor = scanner.nextLine().trim();
                                 book.updateBook(Optional.empty(), Optional.of(bookAuthor),
                                         Optional.empty(),Optional.empty(),
                                         Optional.empty(),Optional.empty());
                                 break;
                             case "3":
-                                System.out.println("Enter New Book Year");
+                                System.out.println("Enter New Book Year:");
                                 bookYear = scanner.nextInt();
                                 book.updateBook(Optional.empty(), Optional.empty(),
                                         Optional.of(bookYear),Optional.empty(),
                                         Optional.empty(),Optional.empty());
                                 break;
                             case "4":
-                                System.out.println("Enter New Book ISBN");
+                                System.out.println("Enter New Book ISBN:");
                                 bookISBN = scanner.nextLine().trim();
                                 book.updateBook(Optional.empty(), Optional.empty(),
                                         Optional.empty(),Optional.of(bookISBN),
                                         Optional.empty(),Optional.empty());
                                 break;
                             case "5":
-                                System.out.println("Enter New Book Genre");
+                                System.out.println("Enter New Book Genre:");
                                 bookGenre = scanner.nextLine().trim();
                                 book.updateBook(Optional.empty(), Optional.empty(),
                                         Optional.empty(),Optional.empty(),
@@ -428,11 +432,14 @@ class Interface {
                                         Optional.of(true),Optional.empty());
                                 break;
                             case "8":
-                                System.out.println("Book marked unavailable");
+                                System.out.println("Book Info:");
                                 book.getBookInfo();
                                 break;
+                            default:
+                                System.out.println("Invalid option.");
+                            }
                         }
-                    }}
+                    }
                     printMenu();
                     break;
                 case "4":
@@ -440,8 +447,10 @@ class Interface {
                     // constructor auto-generates memberID and empty borrowedBookList
                     System.out.println("Enter Member Name (Last, First)");
                     memberName = scanner.nextLine().trim();
+
                     System.out.println("Enter Member email");
                     memberEmail = scanner.nextLine().trim(); // we could maybe do a check for legit emails later?
+
                     member = library.addMember(memberName, memberEmail);
                     member.printMemberInfo();
                     printMenu();
@@ -451,6 +460,7 @@ class Interface {
                     // removes that member from the memberID list and allMembers list
                     System.out.println("Enter Member Name (Last, First)");
                     memberName = scanner.nextLine().trim();
+
                     System.out.println("Enter Member ID");
                     int memberID = Integer.parseInt(scanner.nextLine().trim());
                     member = library.getMember(memberName,memberID);
@@ -461,6 +471,7 @@ class Interface {
                     System.out.println("Enter Book Title:");
                     bookName = scanner.nextLine().trim().toLowerCase();
                     book = library.findBookIdByName(bookName);
+
                     System.out.println("Enter Member ID:");
                     int memId = Integer.parseInt(scanner.nextLine().trim());
                     member = library.getMember(null, memId);
