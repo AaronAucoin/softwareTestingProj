@@ -29,6 +29,7 @@ class Library {
         this.allBooksInLibrary = new ArrayList<>();
         this.loanedBooks = new HashMap<>();
         this.memberIDs = new ArrayList<>();
+        this.allMembers = new ArrayList<>();
     }
 
     // adds a Book to allBooksInLibrary
@@ -303,18 +304,24 @@ class Interface {
                     System.out.println("Enter Book Title");
                     input = scanner.nextLine().trim();
                     bookName = input.toLowerCase();
+
                     System.out.println("Enter Book Author");
                     input = scanner.nextLine().trim();
                     bookAuthor = input.toLowerCase();
+
                     System.out.println("Enter Book Year");
                     input = scanner.nextLine().trim();
                     bookYear = Integer.parseInt(input);
+
                     System.out.println("Enter Book ISBN");
                     input = scanner.nextLine().trim();
                     bookISBN = Integer.parseInt(input);
+
                     System.out.println("Enter Book Genre");
                     input = scanner.nextLine().trim();
                     bookGenre = input.toLowerCase();
+                    // creating book object here
+                    // and adding it to the library
                     book = new Book(bookName, bookAuthor, bookYear,bookISBN, true, bookGenre, library);
                     library.addBook(book);
                     break;
@@ -328,33 +335,98 @@ class Interface {
                     break;
                 case "update_book":
                     // updates a given books info in the library
+                    System.out.println("Enter Book Title");
+                    input = scanner.nextLine().trim().toLowerCase();
+                    book = library.findBookIdByName(input);
+                    // checking if book is not exist here and qualify UML diagram :) 
+                    if (book == null) {
+                        System.out.println("Book not found.");
+                        break;
+                    }
+                    System.out.println("Enter New Book Title:");
+                    bookName = scanner.nextLine().trim().toLowerCase();
+
+                    System.out.println("Enter New Book Author:");
+                    bookAuthor = scanner.nextLine().trim().toLowerCase();
+
+                    System.out.println("Enter New Book Year:");
+                    bookYear = Integer.parseInt(scanner.nextLine().trim());
+
+                    System.out.println("Enter New Book ISBN:");
+                    bookISBN = Integer.parseInt(scanner.nextLine().trim());
+
+                    System.out.println("Enter New Book Genre:");
+                    bookGenre = scanner.nextLine().trim().toLowerCase();
+                    // updating book info here
+                    book.updateBook(
+                        bookName, bookAuthor, bookYear, bookISBN, true, bookGenre);
+                    System.out.println("Book updated."); //boooooommmmmmmmmmmmmmmmm 
                     break;
                 case "add_member":
                     // asks for all necessary member info (name, email)
                     // constructor auto-generates memberID and empty borrowedBookList
                     System.out.println("Enter Member Name (Last, First)");
                     memberName = scanner.nextLine().trim();
+
                     System.out.println("Enter Member email");
                     memberEmail = scanner.nextLine().trim(); // we could maybe do a check for legit emails later?
                     member = library.addMember(memberName, memberEmail);
                     member.printMemberInfo();
+
                     break;
                 case "remove_member":
                     // asks for a member's name and ID
                     // removes that member from the memberID list and allMembers list
                     System.out.println("Enter Member Name (Last, First)");
                     memberName = scanner.nextLine().trim();
+
                     System.out.println("Enter Member ID");
                     int memberID = Integer.parseInt(scanner.nextLine().trim());
+
                     member = library.getMember(memberName,memberID);
                     library.removeMember(member);
+                    System.out.println("Member removed .");
+
                     break;
                 case "checkout_book":
-                    break;
+                    // asks for a book's title and a member's ID
+                    System.out.println("Enter Book Title:");
+                    bookName = scanner.nextLine().trim().toLowerCase();
+                    book = library.findBookIdByName(bookName);
+
+                    System.out.println("Enter Member ID:");
+                    int memId = Integer.parseInt(scanner.nextLine().trim());
+
+                    member = library.getMember(null, memId); 
+                    if (book != null && member != null && book.checkAvailability()) {
+                        library.checkoutBook(book, member);
+                        System.out.println("Book checked out successfully."); } else {  System.out.println("Checkout failed. Book or member not found, or book unavailable."); }
+                break;
+
                 case "return_book":
+                    System.out.println("Enter Book Title:");
+                    bookName = scanner.nextLine().trim().toLowerCase();
+                    book = library.findBookIdByName(bookName);
+
+                    if (book != null) {
+                        library.returnBook(book);
+                        System.out.println("Book returned successfully.");
+                    } else {
+                    System.out.println("Book not found.");}
+                    
                     break;
+                        
                 case "print_member_info":
+                    System.out.println("Enter Member ID:");
+                    int id = Integer.parseInt(scanner.nextLine().trim());
+                    member = library.getMember(null, id);
+                    if (member != null) {
+                        member.printMemberInfo();
+                    } else {
+                        System.out.println("Member not found.");
+                    }
                     break;
+
                 default:
                     System.out.println("Unknown command: " + input);
             }
