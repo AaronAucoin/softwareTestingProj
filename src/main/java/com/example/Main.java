@@ -44,6 +44,17 @@ class Library {
         allBooksInLibrary.add(book);
     }
 
+    public void listAllBooks() {
+        if (allBooksInLibrary.isEmpty()) {
+            System.out.println("No books in the library.");
+        } else {
+            for (Book book : allBooksInLibrary) {
+                System.out.print(book.getBookTitle() + ", ");
+            }
+        }
+    }
+
+
 
     // removes a Book from allBooksInLibrary
     public void removeBook(Book book) {
@@ -152,6 +163,10 @@ class Library {
         }
         System.out.println("Book" + title + "not found");
         return null;
+    }
+
+    public String getMemberID() {
+        return memberIDs.toString();
     }
 }
 
@@ -495,8 +510,8 @@ class Interface {
                     memberEmail = scanner.nextLine().trim(); // we could maybe do a check for legit emails later?
 
                     member = library.addMember(memberName, memberEmail);
+                    System.out.println("Member ID: " + library.getMemberID());
                     member.printMemberInfo();
-                    printMenu();
                     break;
                 case "5": //  remove member
                     // asks for a member's name and ID
@@ -556,6 +571,10 @@ class Interface {
                     }
                     printMenu();
                     break;
+
+                case "11":
+                    library.listAllBooks();
+                    break;
                 
                 default: // invalid command
                     System.out.println("Unknown command: " + input);
@@ -578,6 +597,7 @@ class Interface {
             System.out.println("8. Print Member Info");
             System.out.println("9. Help");
             System.out.println("10. Exit");
+            System.out.println("11. List Books");
             System.out.println("+-----------------------+");
         }
 }

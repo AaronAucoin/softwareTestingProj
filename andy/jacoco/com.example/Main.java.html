@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.example.MemberTest</a> &gt; <a href="index.source.html" class="el_package">com.example</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package com.example;
+
+import java.util.*;
+
+<span class="nc" id="L5">public class Main {</span>
+    public static void main(String[] args) {
+//        Main method so manual testing can be done
+<span class="nc" id="L8">        Library library = new Library(); //Create a library</span>
+<span class="nc" id="L9">        Interface ui = new Interface();</span>
+<span class="nc" id="L10">        ui.doInterface(library);</span>
+<span class="nc" id="L11">    }</span>
+}
+
+class Library {
+    // list of all books possessed by the library
+    // i think this should include currently loaned books
+    private List&lt;Book&gt; allBooksInLibrary;
+
+    // i think we should implement this as a hashmap of books and the member checking it out
+    // this makes it easier to access these logically linked values
+    private HashMap&lt;Book, Member&gt; loanedBooks;
+    private List&lt;Integer&gt; memberIDs; // list of Unique Integer values denoting each member
+    private List&lt;Member&gt; allMembers;//list of all members in the Library
+
+<span class="fc" id="L25">    private static int nextBookID = 1;</span>
+//
+    // constructor for a library object
+<span class="nc" id="L28">    public Library() {</span>
+<span class="nc" id="L29">        this.allBooksInLibrary = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L30">        this.loanedBooks = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L31">        this.memberIDs = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L32">        this.allMembers = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L33">    }</span>
+
+    // adds a Book to allBooksInLibrary
+    public void addBook(Book book) {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        for (Book b : allBooksInLibrary) {</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">            if (b.getBookTitle().equalsIgnoreCase(book.getBookTitle()) &amp;&amp;</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">                    b.getAuthor().equalsIgnoreCase(book.getAuthor())) {</span>
+<span class="nc" id="L40">                System.out.println(&quot;Book already exists in the library.&quot;);</span>
+<span class="nc" id="L41">                return;</span>
+            }
+<span class="nc" id="L43">        }</span>
+<span class="nc" id="L44">        allBooksInLibrary.add(book);</span>
+<span class="nc" id="L45">    }</span>
+
+    public void listAllBooks() {
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (allBooksInLibrary.isEmpty()) {</span>
+<span class="nc" id="L49">            System.out.println(&quot;No books in the library.&quot;);</span>
+        } else {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            for (Book book : allBooksInLibrary) {</span>
+<span class="nc" id="L52">                System.out.print(book.getBookTitle() + &quot;, &quot;);</span>
+<span class="nc" id="L53">            }</span>
+        }
+<span class="nc" id="L55">    }</span>
+
+
+
+    // removes a Book from allBooksInLibrary
+    public void removeBook(Book book) {
+<span class="nc" id="L61">        allBooksInLibrary.remove(book);</span>
+<span class="nc" id="L62">    }</span>
+
+    // generates a new unique bookID to add a book to the library
+    public int generateBookID () {
+<span class="nc" id="L66">        return nextBookID++;</span>
+    }
+
+    // adds a Book, Member pair to loanedBooks HashMap
+    // adds a Book to the Member's BorrowedBooksList
+    public void checkoutBook(Book book, Member member) {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (!book.checkAvailability()) {</span>
+<span class="nc" id="L73">            System.out.println(&quot;Book is not available for checkout.&quot;);</span>
+<span class="nc" id="L74">            return;</span>
+        }
+<span class="nc" id="L76">        loanedBooks.put(book, member);</span>
+<span class="nc" id="L77">        member.addBorrowedBook(book);</span>
+<span class="nc" id="L78">        book.setAvailability(false); // Update here</span>
+<span class="nc" id="L79">    }</span>
+
+    // removes a Book, Member pair from the loaned books HashMap
+    // removes a Book from the member's LoanedBooksList
+    public void returnBook(Book book) {
+<span class="nc" id="L84">        Member member = loanedBooks.remove(book);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (member != null) {</span>
+<span class="nc" id="L86">            member.removeBorrowedBook(book);</span>
+<span class="nc" id="L87">            book.setAvailability(true); // Update here</span>
+        } else {
+<span class="nc" id="L89">            System.out.println(&quot;Book was not loaned out.&quot;);</span>
+        }
+<span class="nc" id="L91">    }</span>
+
+
+    // creates a member object wih specified name and unique member ID
+    // adds new member's ID to memberID list
+    public Member addMember(String name, String email) {
+<span class="nc" id="L97">        Member newMember = new Member(name, email, (int) (memberIDs.size() + 1));</span>
+<span class="nc" id="L98">        memberIDs.add(newMember.getMemberId());</span>
+<span class="nc" id="L99">        allMembers.add(newMember);</span>
+<span class="nc" id="L100">        return newMember;</span>
+    }
+
+    // removes a member's ID from the memberID list
+    // not sure what else to do for this
+    // maybe there will be a list of members stored somewhere to remove this from??
+    // we should add logging or some verification type for this
+    public void removeMember(Member member) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if(member == null) {</span>
+<span class="nc" id="L109">            System.out.println(&quot;Attempted to remove a null Member&quot;);</span>
+<span class="nc" id="L110">            return;</span>
+        }
+<span class="nc" id="L112">        memberIDs.remove(member.getMemberId());</span>
+<span class="nc" id="L113">        allMembers.remove(member);</span>
+<span class="nc" id="L114">    }</span>
+
+    // finds member object from allMember list given name (last, first) and memberID
+    public Member getMember(String memberName, int memberID) {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        for (Member member : allMembers) {</span>
+<span class="nc bnc" id="L119" title="All 4 branches missed.">            if (member.getMemberId() == memberID &amp;&amp; member.getName().equals(memberName)) {</span>
+<span class="nc" id="L120">                return member;</span>
+            }
+<span class="nc" id="L122">        }</span>
+
+<span class="nc" id="L124">        System.out.println(&quot;Member not found&quot;);</span>
+<span class="nc" id="L125">        return null;</span>
+    }
+
+    // returns if a book object is available
+    // I think in the long run this should be modified to
+    // return availability of a book given only its title
+    public boolean bookAvailability(Book book) {
+<span class="nc" id="L132">        return book.checkAvailability();</span>
+    }
+
+    // returns which member checked out a book
+    // references the loanedBooks hashmap for the member object and prints their info
+    // we could change this at some point to only return the name
+    // also MAYBE be changed to only need a books name instead of the object
+    public void whoHasBook(Book book) {
+<span class="nc" id="L140">        Member member = loanedBooks.get(book);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (member != null) {</span>
+<span class="nc" id="L142">            member.printMemberInfo();</span>
+        } else {
+<span class="nc" id="L144">            System.out.println(&quot;Book is not currently checked out.&quot;);</span>
+        }
+<span class="nc" id="L146">    }</span>
+
+    // Not sure what this is intended to do
+    // does it like print all member info, or just names
+    // or does it return a list of Member objects, idk
+    public List&lt;Member&gt; getAllMembers() {
+<span class="nc" id="L152">        return allMembers;</span>
+    }
+
+
+
+    // takes a book's name and returns the corresponding Book object
+    public Book findBookIdByName(String title) {
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        for (Book book : allBooksInLibrary) {</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            if(book.getBookInfo().get(0).equals(title)) {</span>
+<span class="nc" id="L161">                return(book);</span>
+            }
+<span class="nc" id="L163">        }</span>
+<span class="nc" id="L164">        System.out.println(&quot;Book&quot; + title + &quot;not found&quot;);</span>
+<span class="nc" id="L165">        return null;</span>
+    }
+}
+
+class Book {
+    private String name; // title of the book
+    private String author; // author of the book
+    private int year; // books year of publication
+    private String ISBN; // unique ID for every publication of every book
+    private Integer bookID; // unique ID number for book in this library
+
+    // true means a book is not currently loaned and is available to be loaned
+    // false means a book is currently loaned to a member and is not available to be loaned
+    private boolean isAvailable;
+    private String genre; //genre of the book
+
+    // constructor for a Book object
+    // creates its own unique bookID so librarian doesn't need to worry about that
+<span class="fc" id="L183">    public Book(String name, String author, int year, String ISBN, String genre, Library library) {</span>
+<span class="fc" id="L184">        this.name = name;</span>
+<span class="fc" id="L185">        this.author = author;</span>
+<span class="fc" id="L186">        this.year = year;</span>
+<span class="fc" id="L187">        this.ISBN = ISBN;</span>
+<span class="fc" id="L188">        this.isAvailable = true;</span>
+<span class="fc" id="L189">        this.genre = genre;</span>
+<span class="fc" id="L190">        this.bookID = library.generateBookID();</span>
+<span class="fc" id="L191">    }</span>
+
+    // returns if a book is available given a Book object
+    // could MAYBE be modified to only require a book's name instead of object
+    public boolean checkAvailability() {
+<span class="nc" id="L196">        return isAvailable;</span>
+    }
+
+    // changes a book's values to the new values
+    // could be changed to have nulls for parameters to not update those things
+    // bookID should not be manually changeable
+    public void updateBook(Optional&lt;String&gt; name,
+                           Optional&lt;String&gt; author,
+                           Optional&lt;Integer&gt; year,
+                           Optional&lt;String&gt; ISBN,
+                           Optional&lt;Boolean&gt; isAvailable,
+                           Optional&lt;String&gt; genre) {
+<span class="nc" id="L208">        name.ifPresent(n -&gt; this.name = n);</span>
+<span class="nc" id="L209">        author.ifPresent(a -&gt; this.author = a);</span>
+<span class="nc" id="L210">        year.ifPresent(y -&gt; this.year = y);</span>
+<span class="nc" id="L211">        ISBN.ifPresent(i -&gt; this.ISBN = i);</span>
+<span class="nc" id="L212">        isAvailable.ifPresent(avail -&gt; this.isAvailable = avail);</span>
+<span class="nc" id="L213">        genre.ifPresent(g -&gt; this.genre = g);</span>
+<span class="nc" id="L214">    }</span>
+
+    // creates a String of a Book's info and prints it
+    // returns a list of book info points
+    public List&lt;String&gt; getBookInfo() {
+<span class="fc" id="L219">        String bookInfoString = &quot;&quot;;</span>
+<span class="fc" id="L220">        bookInfoString += &quot;Name: &quot; + name + &quot;\n&quot;;</span>
+<span class="fc" id="L221">        bookInfoString += &quot;Author: &quot; + author + &quot;\n&quot;;</span>
+<span class="fc" id="L222">        bookInfoString += &quot;Year: &quot; + year + &quot;\n&quot;;</span>
+<span class="fc" id="L223">        bookInfoString += &quot;ISBN: &quot; + ISBN + &quot;\n&quot;;</span>
+<span class="fc" id="L224">        bookInfoString += &quot;Book ID: &quot; + bookID + &quot;\n&quot;;</span>
+<span class="fc" id="L225">        bookInfoString += &quot;Available: &quot; + isAvailable + &quot;\n&quot;;</span>
+<span class="fc" id="L226">        bookInfoString += &quot;Genre: &quot; + genre + &quot;\n&quot;;</span>
+<span class="fc" id="L227">        System.out.println(bookInfoString);</span>
+<span class="fc" id="L228">        List&lt;String&gt; bookInfo = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L229">        bookInfo.add(this.name);</span>
+<span class="fc" id="L230">        bookInfo.add(this.author);</span>
+<span class="fc" id="L231">        bookInfo.add(Integer.toString(this.year));</span>
+<span class="fc" id="L232">        bookInfo.add(this.ISBN);</span>
+<span class="fc" id="L233">        bookInfo.add(Integer.toString(this.bookID));</span>
+<span class="fc" id="L234">        bookInfo.add(Boolean.toString(this.isAvailable));</span>
+<span class="fc" id="L235">        bookInfo.add(this.genre);</span>
+<span class="fc" id="L236">        return bookInfo;</span>
+    }
+
+    //sets book availability to input;
+    public void setAvailability(boolean b) {
+<span class="nc" id="L241">        this.isAvailable = b;</span>
+<span class="nc" id="L242">    }</span>
+
+    public String getBookTitle() {
+<span class="nc" id="L245">        return this.name;</span>
+    }
+
+    public String getAuthor() {
+<span class="nc" id="L249">        return this.author;</span>
+    }
+}
+
+class Member {
+    private String name; // member's Legal first and last name (&quot;Reed, Steven&quot;)
+    private String email; // member's preferred email address (&quot;sreed43@lsu.edu&quot;)
+    private Integer memberID; // unique integer ID for each member object
+    private List&lt;Book&gt; borrowedBookList; // list of books this Member has borrowed
+
+    // constructor for the Member object
+<span class="fc" id="L260">    public Member(String name, String email, Integer memberID) {</span>
+<span class="fc" id="L261">        this.name = name;</span>
+<span class="fc" id="L262">        this.email = email;</span>
+<span class="fc" id="L263">        this.memberID = memberID;</span>
+<span class="fc" id="L264">        this.borrowedBookList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L265">    }</span>
+
+    // prints the info of a Member
+    // I think this should be modified to print a member's info and then return it
+    public void printMemberInfo() {
+<span class="nc" id="L270">        System.out.println(&quot;Name: &quot; + name);</span>
+<span class="nc" id="L271">        System.out.println(&quot;Email: &quot; + email);</span>
+<span class="nc" id="L272">        System.out.println(&quot;MemberID: &quot; + memberID);</span>
+<span class="nc" id="L273">        getBorrowedBookList();</span>
+<span class="nc" id="L274">    }</span>
+
+    // returns a Member's Identification number
+    public Integer getMemberId() {
+<span class="fc" id="L278">        return this.memberID;</span>
+    }
+
+    // returns a member's name
+    public String getName() {
+<span class="fc" id="L283">        return this.name;</span>
+    }
+
+    // returns a member's email
+<span class="fc" id="L287">    public String getEmail() { return this.email; }</span>
+
+    // prints then returns a Member's borrowed book list
+    public List&lt;Book&gt; getBorrowedBookList() {
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">        if (borrowedBookList == null) {</span>
+<span class="nc" id="L292">            return null;</span>
+        } else {
+<span class="fc" id="L294">            System.out.println(name + &quot;'s borrowed book list:&quot;);</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">            for (Book book : borrowedBookList) {</span>
+<span class="fc" id="L296">                book.getBookInfo();</span>
+<span class="fc" id="L297">            }</span>
+<span class="fc" id="L298">            System.out.println();</span>
+<span class="fc" id="L299">            return borrowedBookList;</span>
+        }
+    }
+
+    // adds a book to a Member's borrowed book list
+    // used when Library class checks out a book
+    public List&lt;Book&gt; addBorrowedBook(Book book) {
+<span class="fc" id="L306">        borrowedBookList.add(book);</span>
+<span class="fc" id="L307">        return borrowedBookList;</span>
+    }
+
+    // updates a member's info to the specified values
+    // could be modified to accept nulls for unchanging values
+    // member ID should not be changeable
+    public void updateMemberInfo(String name, String email) {
+<span class="fc" id="L314">        this.name = name;</span>
+<span class="fc" id="L315">        this.email = email;</span>
+<span class="fc" id="L316">    }</span>
+
+    // removes a book from a member's borrowed book list
+    // used when Library class returns a book
+    public void removeBorrowedBook(Book book) {
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">        if (borrowedBookList.contains(book)) {</span>
+<span class="fc" id="L322">            borrowedBookList.remove(book);</span>
+        } else {
+<span class="nc" id="L324">            System.out.println(&quot;user &quot; + name + &quot; has not borrowed &quot; + book);</span>
+        }
+<span class="fc" id="L326">    }</span>
+}
+
+<span class="nc" id="L329">class Interface {</span>
+    // only one function that has a loop of looking for commands and executing them
+    public void doInterface(Library library) {
+<span class="nc" id="L332">        Scanner scanner = new Scanner(System.in);</span>
+        String input;
+        String bookAuthor;
+        String bookName;
+        String bookGenre;
+        int bookYear;
+        String bookISBN;
+        Book book;
+        String memberName;
+        String memberEmail;
+        Member member;
+
+<span class="nc" id="L344">        System.out.println(&quot;Welcome to the Library CLI! Type 'exit' to quit.&quot;);</span>
+<span class="nc" id="L345">        System.out.println(&quot;Type 'help' to see all commands.&quot;);</span>
+<span class="nc" id="L346">        printMenu();</span>
+
+        while (true) {
+<span class="nc" id="L349">            System.out.print(&quot;&gt; &quot;);</span>
+<span class="nc" id="L350">            input = scanner.nextLine().trim();</span>
+
+
+<span class="nc bnc" id="L353" title="All 4 branches missed.">            if (input.equalsIgnoreCase(&quot;10&quot;) || input.equalsIgnoreCase(&quot;exit&quot;)) {</span>
+<span class="nc" id="L354">                System.out.println(&quot;Goodbye!&quot;);</span>
+<span class="nc" id="L355">                break;</span>
+            }
+
+<span class="nc bnc" id="L358" title="All 12 branches missed.">            switch (input.toLowerCase()) {</span>
+                case &quot;hello&quot;: //    hello command
+<span class="nc" id="L360">                    System.out.println(&quot;Hi there!&quot;);</span>
+<span class="nc" id="L361">                    printMenu();</span>
+<span class="nc" id="L362">                    break;</span>
+                case &quot;9&quot;:
+<span class="nc" id="L364">                    System.out.println(&quot;Choose number to select option:&quot;);</span>
+<span class="nc" id="L365">                    System.out.println(&quot;+-----------------------+&quot;);</span>
+<span class="nc" id="L366">                    System.out.println(&quot;1. Add Book&quot;);</span>
+<span class="nc" id="L367">                    System.out.println(&quot;2. Remove Book&quot;);</span>
+<span class="nc" id="L368">                    System.out.println(&quot;3. Update Book&quot;);</span>
+<span class="nc" id="L369">                    System.out.println(&quot;4. Add Member&quot;);</span>
+<span class="nc" id="L370">                    System.out.println(&quot;5. Remove Member&quot;);</span>
+<span class="nc" id="L371">                    System.out.println(&quot;6. Checkout Book&quot;);</span>
+<span class="nc" id="L372">                    System.out.println(&quot;7. Return Book&quot;);</span>
+<span class="nc" id="L373">                    System.out.println(&quot;8. Print Member Info&quot;);</span>
+<span class="nc" id="L374">                    System.out.println(&quot;9. Help&quot;);</span>
+<span class="nc" id="L375">                    System.out.println(&quot;10. Exit&quot;);</span>
+<span class="nc" id="L376">                    System.out.println(&quot;+-----------------------+&quot;);</span>
+<span class="nc" id="L377">                    break;</span>
+                case &quot;1&quot;: // add book
+                    // asks for all info about a book ands adds it to library book list
+                    // always sets new book to available and bookID is auto-generated by Book constructor
+<span class="nc" id="L381">                    System.out.println(&quot;Enter Book Title&quot;);</span>
+<span class="nc" id="L382">                    input = scanner.nextLine().trim();</span>
+<span class="nc" id="L383">                    bookName = input.toLowerCase();</span>
+
+<span class="nc" id="L385">                    System.out.println(&quot;Enter Book Author&quot;);</span>
+<span class="nc" id="L386">                    input = scanner.nextLine().trim();</span>
+<span class="nc" id="L387">                    bookAuthor = input.toLowerCase();</span>
+
+<span class="nc" id="L389">                    System.out.println(&quot;Enter Book Year&quot;);</span>
+<span class="nc" id="L390">                    input = scanner.nextLine().trim();</span>
+<span class="nc" id="L391">                    bookYear = Integer.parseInt(input);</span>
+
+<span class="nc" id="L393">                    System.out.println(&quot;Enter Book ISBN&quot;);</span>
+<span class="nc" id="L394">                    bookISBN = scanner.nextLine().trim();</span>
+
+<span class="nc" id="L396">                    System.out.println(&quot;Enter Book Genre&quot;);</span>
+<span class="nc" id="L397">                    input = scanner.nextLine().trim();</span>
+<span class="nc" id="L398">                    bookGenre = input.toLowerCase();</span>
+
+<span class="nc" id="L400">                    book = new Book(bookName, bookAuthor, bookYear,bookISBN, bookGenre, library);</span>
+<span class="nc" id="L401">                    library.addBook(book);</span>
+<span class="nc" id="L402">                    printMenu();</span>
+<span class="nc" id="L403">                    break;</span>
+                case &quot;2&quot;: //  remove book
+                    // removes a book with a given title from the library
+<span class="nc" id="L406">                    System.out.println(&quot;Enter Book Title&quot;);</span>
+<span class="nc" id="L407">                    input = scanner.nextLine().trim();</span>
+<span class="nc" id="L408">                    String title = input.toLowerCase();</span>
+<span class="nc" id="L409">                    book = library.findBookIdByName(title);</span>
+<span class="nc" id="L410">                    library.removeBook(book);</span>
+<span class="nc" id="L411">                    printMenu();</span>
+<span class="nc" id="L412">                    break;</span>
+                case &quot;3&quot;: //  update book
+                    // updates a given books info in the library
+<span class="nc" id="L415">                    System.out.println(&quot;Enter Book Title&quot;);</span>
+<span class="nc" id="L416">                    String updateTitle = scanner.nextLine().trim().toLowerCase();</span>
+<span class="nc" id="L417">                    book = library.findBookIdByName(updateTitle);</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">                    if (book != null) { </span>
+                        while(true) {
+                        // asks for which info to update and updates it
+<span class="nc" id="L421">                        System.out.println(&quot;What would you like to update?&quot;);</span>
+<span class="nc" id="L422">                        System.out.println(&quot;1. Update Title&quot;);</span>
+<span class="nc" id="L423">                        System.out.println(&quot;2. Update Author&quot;);</span>
+<span class="nc" id="L424">                        System.out.println(&quot;3. Update Year&quot;);</span>
+<span class="nc" id="L425">                        System.out.println(&quot;4. Update ISBN&quot;);</span>
+<span class="nc" id="L426">                        System.out.println(&quot;5. Update Genre&quot;);</span>
+<span class="nc" id="L427">                        System.out.println(&quot;6. Mark Unavailable&quot;);</span>
+<span class="nc" id="L428">                        System.out.println(&quot;7. Mark Available&quot;);</span>
+<span class="nc" id="L429">                        System.out.println(&quot;8. Print Book Info&quot;);</span>
+<span class="nc" id="L430">                        System.out.println(&quot;9. Exit&quot;);</span>
+<span class="nc" id="L431">                        System.out.println(&quot;+----------------------+&quot;);</span>
+<span class="nc" id="L432">                        System.out.println(&quot;&gt;&quot;);</span>
+                        
+<span class="nc" id="L434">                        input = scanner.nextLine().trim();</span>
+<span class="nc bnc" id="L435" title="All 2 branches missed.">                        if(input.equalsIgnoreCase(&quot;9&quot;)) {</span>
+<span class="nc" id="L436">                            break;</span>
+                        }
+
+                        // updates the book with the new info
+<span class="nc bnc" id="L440" title="All 9 branches missed.">                        switch (input.toLowerCase()) {</span>
+                            case &quot;1&quot;: //    update title
+<span class="nc" id="L442">                                System.out.println(&quot;Enter New Book Title:&quot;);</span>
+<span class="nc" id="L443">                                title = scanner.nextLine().trim();</span>
+<span class="nc" id="L444">                                book.updateBook(Optional.of(title), Optional.empty(),</span>
+<span class="nc" id="L445">                                        Optional.empty(),Optional.empty(),</span>
+<span class="nc" id="L446">                                        Optional.empty(),Optional.empty());</span>
+<span class="nc" id="L447">                                break;</span>
+                            case &quot;2&quot;: //    update author
+<span class="nc" id="L449">                                System.out.println(&quot;Enter New Book Author:&quot;);</span>
+<span class="nc" id="L450">                                bookAuthor = scanner.nextLine().trim();</span>
+<span class="nc" id="L451">                                book.updateBook(Optional.empty(), Optional.of(bookAuthor),</span>
+<span class="nc" id="L452">                                        Optional.empty(),Optional.empty(),</span>
+<span class="nc" id="L453">                                        Optional.empty(),Optional.empty());</span>
+<span class="nc" id="L454">                                break;</span>
+                            case &quot;3&quot;: //    update year
+<span class="nc" id="L456">                                System.out.println(&quot;Enter New Book Year:&quot;);</span>
+<span class="nc" id="L457">                                bookYear = scanner.nextInt();</span>
+<span class="nc" id="L458">                                book.updateBook(Optional.empty(), Optional.empty(),</span>
+<span class="nc" id="L459">                                        Optional.of(bookYear),Optional.empty(),</span>
+<span class="nc" id="L460">                                        Optional.empty(),Optional.empty());</span>
+<span class="nc" id="L461">                                break;</span>
+                            case &quot;4&quot;: //    update ISBN
+<span class="nc" id="L463">                                System.out.println(&quot;Enter New Book ISBN:&quot;);</span>
+<span class="nc" id="L464">                                bookISBN = scanner.nextLine().trim();</span>
+<span class="nc" id="L465">                                book.updateBook(Optional.empty(), Optional.empty(),</span>
+<span class="nc" id="L466">                                        Optional.empty(),Optional.of(bookISBN),</span>
+<span class="nc" id="L467">                                        Optional.empty(),Optional.empty());</span>
+<span class="nc" id="L468">                                break;</span>
+                            case &quot;5&quot;: //   update genre
+<span class="nc" id="L470">                                System.out.println(&quot;Enter New Book Genre:&quot;);</span>
+<span class="nc" id="L471">                                bookGenre = scanner.nextLine().trim();</span>
+<span class="nc" id="L472">                                book.updateBook(Optional.empty(), Optional.empty(),</span>
+<span class="nc" id="L473">                                        Optional.empty(),Optional.empty(),</span>
+<span class="nc" id="L474">                                        Optional.empty(),Optional.of(bookGenre));</span>
+<span class="nc" id="L475">                                break;</span>
+                            case &quot;6&quot;: //    mark unavailable
+<span class="nc" id="L477">                                System.out.println(&quot;Book marked unavailable&quot;);</span>
+<span class="nc" id="L478">                                book.updateBook(Optional.empty(), Optional.empty(),</span>
+<span class="nc" id="L479">                                        Optional.empty(),Optional.empty(),</span>
+<span class="nc" id="L480">                                        Optional.of(false),Optional.empty());</span>
+<span class="nc" id="L481">                                break;</span>
+                            case &quot;7&quot;: //    mark available
+<span class="nc" id="L483">                                System.out.println(&quot;Book marked available&quot;);</span>
+<span class="nc" id="L484">                                book.updateBook(Optional.empty(), Optional.empty(),</span>
+<span class="nc" id="L485">                                        Optional.empty(),Optional.empty(),</span>
+<span class="nc" id="L486">                                        Optional.of(true),Optional.empty());</span>
+<span class="nc" id="L487">                                break;</span>
+                            case &quot;8&quot;: //   print book info
+<span class="nc" id="L489">                                System.out.println(&quot;Book Info:&quot;);</span>
+<span class="nc" id="L490">                                book.getBookInfo();</span>
+<span class="nc" id="L491">                                break;</span>
+                            default: //    invalid option
+<span class="nc" id="L493">                                System.out.println(&quot;Invalid option!&quot;);</span>
+<span class="nc" id="L494">                            }</span>
+                        }
+                    }
+<span class="nc" id="L497">                    printMenu();</span>
+<span class="nc" id="L498">                    break;</span>
+                case &quot;4&quot;: //    add member
+                    // asks for all necessary member info (name, email)
+                    // constructor auto-generates memberID and empty borrowedBookList
+<span class="nc" id="L502">                    System.out.println(&quot;Enter Member Name (Last, First)&quot;);</span>
+<span class="nc" id="L503">                    memberName = scanner.nextLine().trim();</span>
+
+<span class="nc" id="L505">                    System.out.println(&quot;Enter Member email&quot;);</span>
+<span class="nc" id="L506">                    memberEmail = scanner.nextLine().trim(); // we could maybe do a check for legit emails later?</span>
+
+<span class="nc" id="L508">                    member = library.addMember(memberName, memberEmail);</span>
+<span class="nc" id="L509">                    member.printMemberInfo();</span>
+<span class="nc" id="L510">                    printMenu();</span>
+<span class="nc" id="L511">                    break;</span>
+                case &quot;5&quot;: //  remove member
+                    // asks for a member's name and ID
+                    // removes that member from the memberID list and allMembers list
+<span class="nc" id="L515">                    System.out.println(&quot;Enter Member Name (Last, First)&quot;);</span>
+<span class="nc" id="L516">                    memberName = scanner.nextLine().trim();</span>
+
+<span class="nc" id="L518">                    System.out.println(&quot;Enter Member ID&quot;);</span>
+<span class="nc" id="L519">                    int memberID = Integer.parseInt(scanner.nextLine().trim());</span>
+<span class="nc" id="L520">                    member = library.getMember(memberName,memberID);</span>
+<span class="nc" id="L521">                    library.removeMember(member);</span>
+<span class="nc" id="L522">                    printMenu();</span>
+<span class="nc" id="L523">                    break;</span>
+
+                case &quot;6&quot;: // checkout book
+<span class="nc" id="L526">                    System.out.println(&quot;Enter Book Title:&quot;);</span>
+<span class="nc" id="L527">                    bookName = scanner.nextLine().trim().toLowerCase();</span>
+<span class="nc" id="L528">                    book = library.findBookIdByName(bookName);</span>
+
+<span class="nc" id="L530">                    System.out.println(&quot;Enter Member ID:&quot;);</span>
+<span class="nc" id="L531">                    int memId = Integer.parseInt(scanner.nextLine().trim());</span>
+<span class="nc" id="L532">                    member = library.getMember(null, memId);</span>
+                
+<span class="nc bnc" id="L534" title="All 6 branches missed.">                    if (book != null &amp;&amp; member != null &amp;&amp; book.checkAvailability()) {</span>
+<span class="nc" id="L535">                        library.checkoutBook(book, member);</span>
+<span class="nc" id="L536">                        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false), Optional.empty());</span>
+<span class="nc" id="L537">                        System.out.println(&quot;Book checked out successfully.&quot;);</span>
+                    } else {
+<span class="nc" id="L539">                        System.out.println(&quot;Error: Book not found, unavailable, or member ID invalid.&quot;);</span>
+                    }
+<span class="nc" id="L541">                    printMenu();</span>
+<span class="nc" id="L542">                    break;</span>
+                
+                case &quot;7&quot;: // return book
+<span class="nc" id="L545">                    System.out.println(&quot;Enter Book Title:&quot;);</span>
+<span class="nc" id="L546">                    bookName = scanner.nextLine().trim().toLowerCase();</span>
+<span class="nc" id="L547">                    book = library.findBookIdByName(bookName);</span>
+                
+<span class="nc bnc" id="L549" title="All 2 branches missed.">                    if (book != null) {</span>
+<span class="nc" id="L550">                        library.returnBook(book);</span>
+<span class="nc" id="L551">                        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(true), Optional.empty());</span>
+<span class="nc" id="L552">                        System.out.println(&quot;Book returned successfully.&quot;);</span>
+                    } else {
+<span class="nc" id="L554">                        System.out.println(&quot;Book not found.&quot;);</span>
+                    }
+<span class="nc" id="L556">                    printMenu();</span>
+<span class="nc" id="L557">                    break;</span>
+                
+                case &quot;8&quot;: // print member info
+<span class="nc" id="L560">                    System.out.println(&quot;Enter Member ID:&quot;);</span>
+<span class="nc" id="L561">                    int id = Integer.parseInt(scanner.nextLine().trim());</span>
+<span class="nc" id="L562">                    member = library.getMember(null, id);</span>
+<span class="nc bnc" id="L563" title="All 2 branches missed.">                    if (member != null) {</span>
+<span class="nc" id="L564">                        member.printMemberInfo();</span>
+                    } else {
+<span class="nc" id="L566">                        System.out.println(&quot;Member not found.&quot;);</span>
+                    }
+<span class="nc" id="L568">                    printMenu();</span>
+<span class="nc" id="L569">                    break;</span>
+
+                case &quot;11&quot;:
+<span class="nc" id="L572">                    library.listAllBooks();</span>
+<span class="nc" id="L573">                    break;</span>
+                
+                default: // invalid command
+<span class="nc" id="L576">                    System.out.println(&quot;Unknown command: &quot; + input);</span>
+<span class="nc" id="L577">            }</span>
+        }
+
+
+<span class="nc" id="L581">        scanner.close();</span>
+<span class="nc" id="L582">    }</span>
+        public void printMenu(){
+<span class="nc" id="L584">            System.out.println(&quot;choose number to select option&quot;);</span>
+<span class="nc" id="L585">            System.out.println(&quot;+-----------------------+&quot;);</span>
+<span class="nc" id="L586">            System.out.println(&quot;1. Add Book&quot;);</span>
+<span class="nc" id="L587">            System.out.println(&quot;2. Remove Book&quot;);</span>
+<span class="nc" id="L588">            System.out.println(&quot;3. Update Book&quot;);</span>
+<span class="nc" id="L589">            System.out.println(&quot;4. Add Member&quot;);</span>
+<span class="nc" id="L590">            System.out.println(&quot;5. Remove Member&quot;);</span>
+<span class="nc" id="L591">            System.out.println(&quot;6. Checkout Book&quot;);</span>
+<span class="nc" id="L592">            System.out.println(&quot;7. Return Book&quot;);</span>
+<span class="nc" id="L593">            System.out.println(&quot;8. Print Member Info&quot;);</span>
+<span class="nc" id="L594">            System.out.println(&quot;9. Help&quot;);</span>
+<span class="nc" id="L595">            System.out.println(&quot;10. Exit&quot;);</span>
+<span class="nc" id="L596">            System.out.println(&quot;11. List Books&quot;);</span>
+<span class="nc" id="L597">            System.out.println(&quot;+-----------------------+&quot;);</span>
+<span class="nc" id="L598">        }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
