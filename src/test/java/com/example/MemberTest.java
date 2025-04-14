@@ -124,7 +124,7 @@ public class MemberTest {
         member.addBorrowedBook(book4);
         member.addBorrowedBook(book5);
 
-        List<Book> borrowedBookList = member.getBorrowedBookList();
+        List<Book> borrowedBookList = member.getBorrowedBooks();
         assertEquals(book, borrowedBookList.get(0));
         assertEquals(book1, borrowedBookList.get(1));
         assertEquals(book2, borrowedBookList.get(2));
@@ -132,4 +132,5 @@ public class MemberTest {
         assertEquals(book4, borrowedBookList.get(4));
         assertEquals(book5, borrowedBookList.get(5));
     }
+
 }

@@ -274,6 +274,10 @@ class Member {
             System.out.println("user " + name + " has not borrowed " + book);
         }
     }
+
+    public String getEmail() {
+        return this.email;
+    }
 }
 
 class Interface {
