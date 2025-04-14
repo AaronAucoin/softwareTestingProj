@@ -12,10 +12,6 @@ public class Main {
 }
 
 class Library {
-    // Not sure what this is supposed to be
-    // possible a list of unloaned book IDs, that seems redundant though
-    private List<Integer> AvailableBookIDs;
-
     // list of all books possessed by the library
     // i think this should include currently loaned books
     private List<Book> allBooksInLibrary;
@@ -25,6 +21,8 @@ class Library {
     private HashMap<Book, Member> loanedBooks;
     private List<Integer> memberIDs; // list of Unique Integer values denoting each member
     private List<Member> allMembers;//list of all members in the Library
+
+    private static int nextBookID = 1;
 //
     // constructor for a library object
     public Library() {
@@ -36,8 +34,16 @@ class Library {
 
     // adds a Book to allBooksInLibrary
     public void addBook(Book book) {
+        for (Book b : allBooksInLibrary) {
+            if (b.getBookTitle().equalsIgnoreCase(book.getBookTitle()) &&
+                    b.getAuthor().equalsIgnoreCase(book.getAuthor())) {
+                System.out.println("Book already exists in the library.");
+                return;
+            }
+        }
         allBooksInLibrary.add(book);
     }
+
 
     // removes a Book from allBooksInLibrary
     public void removeBook(Book book) {
@@ -46,22 +52,33 @@ class Library {
 
     // generates a new unique bookID to add a book to the library
     public int generateBookID () {
-        return allBooksInLibrary.size() + 1;
+        return nextBookID++;
     }
 
     // adds a Book, Member pair to loanedBooks HashMap
     // adds a Book to the Member's BorrowedBooksList
     public void checkoutBook(Book book, Member member) {
+        if (!book.checkAvailability()) {
+            System.out.println("Book is not available for checkout.");
+            return;
+        }
         loanedBooks.put(book, member);
         member.addBorrowedBook(book);
+        book.setAvailability(false); // Update here
     }
 
     // removes a Book, Member pair from the loaned books HashMap
     // removes a Book from the member's LoanedBooksList
     public void returnBook(Book book) {
         Member member = loanedBooks.remove(book);
-        member.removeBorrowedBook(book);
+        if (member != null) {
+            member.removeBorrowedBook(book);
+            book.setAvailability(true); // Update here
+        } else {
+            System.out.println("Book was not loaned out.");
+        }
     }
+
 
     // creates a member object wih specified name and unique member ID
     // adds new member's ID to memberID list
@@ -87,10 +104,12 @@ class Library {
 
     // finds member object from allMember list given name (last, first) and memberID
     public Member getMember(String memberName, int memberID) {
-        Member member = allMembers.get(memberID);
-        if(member.getName().equals(memberName)) {
-            return member;
+        for (Member member : allMembers) {
+            if (member.getMemberId() == memberID && member.getName().equals(memberName)) {
+                return member;
+            }
         }
+
         System.out.println("Member not found");
         return null;
     }
@@ -107,14 +126,22 @@ class Library {
     // we could change this at some point to only return the name
     // also MAYBE be changed to only need a books name instead of the object
     public void whoHasBook(Book book) {
-        loanedBooks.get(book).printMemberInfo();
+        Member member = loanedBooks.get(book);
+        if (member != null) {
+            member.printMemberInfo();
+        } else {
+            System.out.println("Book is not currently checked out.");
+        }
     }
 
     // Not sure what this is intended to do
     // does it like print all member info, or just names
     // or does it return a list of Member objects, idk
-    public void getAllMembers() {
+    public List<Member> getAllMembers() {
+        return allMembers;
     }
+
+
 
     // takes a book's name and returns the corresponding Book object
     public Book findBookIdByName(String title) {
@@ -196,6 +223,19 @@ class Book {
         bookInfo.add(Boolean.toString(this.isAvailable));
         bookInfo.add(this.genre);
         return bookInfo;
+    }
+
+    //sets book availability to input;
+    public void setAvailability(boolean b) {
+        this.isAvailable = b;
+    }
+
+    public String getBookTitle() {
+        return this.name;
+    }
+
+    public String getAuthor() {
+        return this.author;
     }
 }
 
