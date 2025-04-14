@@ -44,6 +44,11 @@ class Library {
         allBooksInLibrary.remove(book);
     }
 
+    // gets all books in a library
+    public List<Book> getAllBooks() {
+        return allBooksInLibrary;
+    }
+
     // generates a new unique bookID to add a book to the library
     public int generateBookID () {
         return allBooksInLibrary.size() + 1;
@@ -88,6 +93,13 @@ class Library {
 
     // finds member object from allMember list given name (last, first) and memberID
     public Member getMember(String memberName, int memberID) {
+        if(memberName == null) {
+            for (Member member : allMembers) {
+                if (member.getMemberId() == memberID) {
+                    return member;
+                }
+            }
+        }
         for (Member member : allMembers) {
             if (member.getMemberId() == memberID && member.getName().equals(memberName)) {
                 return member;
@@ -235,7 +247,6 @@ class Member {
     }
 
 
-
     // checks if a member has borrowed a book
     public boolean hasBorrowed(Book book) {
         return borrowedBookList.contains(book);
@@ -296,7 +307,6 @@ class Interface {
         Member member;
 
         System.out.println("Welcome to the Library CLI! Type 'exit' to quit.");
-        System.out.println("Type 'help' to see all commands.");
         printMenu();
 
         while (true) {
@@ -304,7 +314,7 @@ class Interface {
             input = scanner.nextLine().trim();
 
 
-            if (input.equalsIgnoreCase("10") || input.equalsIgnoreCase("exit")) {
+            if (input.equalsIgnoreCase("11") || input.equalsIgnoreCase("exit")) {
                 System.out.println("Goodbye!");
                 break;
             }
@@ -314,7 +324,7 @@ class Interface {
                     System.out.println("Hi there!");
                     printMenu();
                     break;
-                case "9":
+                case "10":
                     System.out.println("Choose number to select option:");
                     System.out.println("+-----------------------+");
                     System.out.println("1. Add Book");
@@ -325,8 +335,9 @@ class Interface {
                     System.out.println("6. Checkout Book");
                     System.out.println("7. Return Book");
                     System.out.println("8. Print Member Info");
-                    System.out.println("9. Help");
-                    System.out.println("10. Exit");
+                    System.out.println("9. Print All Books List");
+                    System.out.println("10. Help");
+                    System.out.println("11. Exit");
                     System.out.println("+-----------------------+");
                     break;
                 case "1": // add book
@@ -362,6 +373,7 @@ class Interface {
                     String title = input.toLowerCase();
                     book = library.findBookIdByName(title);
                     library.removeBook(book);
+                    System.out.println("Book " + title + " has been removed\n\n");
                     printMenu();
                     break;
                 case "3": //  update book
@@ -521,7 +533,13 @@ class Interface {
                     }
                     printMenu();
                     break;
-                
+                case "9": // print all book names
+                    System.out.println("Printing All Books List:");
+                    List<Book> allBooks = library.getAllBooks();
+                    for(Book thisBook : allBooks) {
+                        thisBook.getBookInfo();
+                    }
+                    break;
                 default: // invalid command
                     System.out.println("Unknown command: " + input);
             }
@@ -541,8 +559,9 @@ class Interface {
             System.out.println("6. Checkout Book");
             System.out.println("7. Return Book");
             System.out.println("8. Print Member Info");
-            System.out.println("9. Help");
-            System.out.println("10. Exit");
+            System.out.println("9. Print All Books List");
+            System.out.println("10. Help");
+            System.out.println("11. Exit");
             System.out.println("+-----------------------+");
         }
 }
