@@ -1,9 +1,6 @@
 package com.example;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -135,7 +132,7 @@ class Book {
     private String name; // title of the book
     private String author; // author of the book
     private int year; // books year of publication
-    private int ISBN; // idk what this is??
+    private String ISBN; // unique ID for every publication of every book
     private Integer bookID; // unique ID number for book in this library
 
     // true means a book is not currently loaned and is available to be loaned
@@ -145,12 +142,12 @@ class Book {
 
     // constructor for a Book object
     // creates its own unique bookID so librarian doesn't need to worry about that
-    public Book(String name, String author, int year, int ISBN, boolean isAvailable, String genre, Library library) {
+    public Book(String name, String author, int year, String ISBN, String genre, Library library) {
         this.name = name;
         this.author = author;
         this.year = year;
         this.ISBN = ISBN;
-        this.isAvailable = isAvailable;
+        this.isAvailable = true;
         this.genre = genre;
         this.bookID = library.generateBookID();
     }
@@ -164,13 +161,18 @@ class Book {
     // changes a book's values to the new values
     // could be changed to have nulls for parameters to not update those things
     // bookID should not be manually changeable
-    public void updateBook(String name, String author, int year, int ISBN, boolean isAvailable, String genre) {
-        this.name = name;
-        this.author = author;
-        this.year = year;
-        this.ISBN = ISBN;
-        this.isAvailable = isAvailable;
-        this.genre = genre;
+    public void updateBook(Optional<String> name,
+                           Optional<String> author,
+                           Optional<Integer> year,
+                           Optional<String> ISBN,
+                           Optional<Boolean> isAvailable,
+                           Optional<String> genre) {
+        name.ifPresent(n -> this.name = n);
+        author.ifPresent(a -> this.author = a);
+        year.ifPresent(y -> this.year = y);
+        ISBN.ifPresent(i -> this.ISBN = i);
+        isAvailable.ifPresent(avail -> this.isAvailable = avail);
+        genre.ifPresent(g -> this.genre = g);
     }
 
     // creates a String of a Book's info and prints it
@@ -189,7 +191,7 @@ class Book {
         bookInfo.add(this.name);
         bookInfo.add(this.author);
         bookInfo.add(Integer.toString(this.year));
-        bookInfo.add(Integer.toString(this.ISBN));
+        bookInfo.add(this.ISBN);
         bookInfo.add(Integer.toString(this.bookID));
         bookInfo.add(Boolean.toString(this.isAvailable));
         bookInfo.add(this.genre);
@@ -278,7 +280,7 @@ class Interface {
         String bookName;
         String bookGenre;
         int bookYear;
-        int bookISBN;
+        String bookISBN;
         Book book;
         String memberName;
         String memberEmail;
@@ -332,12 +334,11 @@ class Interface {
                     input = scanner.nextLine().trim();
                     bookYear = Integer.parseInt(input);
                     System.out.println("Enter Book ISBN");
-                    input = scanner.nextLine().trim();
-                    bookISBN = Integer.parseInt(input);
+                    bookISBN = scanner.nextLine().trim();
                     System.out.println("Enter Book Genre");
                     input = scanner.nextLine().trim();
                     bookGenre = input.toLowerCase();
-                    book = new Book(bookName, bookAuthor, bookYear,bookISBN, true, bookGenre, library);
+                    book = new Book(bookName, bookAuthor, bookYear,bookISBN, bookGenre, library);
                     library.addBook(book);
                     printMenu();
                     break;
@@ -355,21 +356,77 @@ class Interface {
                     System.out.println("Enter Book Title");
                     String updateTitle = scanner.nextLine().trim().toLowerCase();
                     book = library.findBookIdByName(updateTitle);
-                    if (book != null) {
-                        System.out.println("Enter new Title:");
-                        bookName = scanner.nextLine();
-                        System.out.println("Enter new Author:");
-                        bookAuthor = scanner.nextLine();
-                        System.out.println("Enter new Year:");
-                        bookYear = Integer.parseInt(scanner.nextLine());
-                        System.out.println("Enter new ISBN:");
-                        bookISBN = Integer.parseInt(scanner.nextLine());
-                        System.out.println("Enter new Genre:");
-                        bookGenre = scanner.nextLine();
-                        System.out.println("Is the book available? (true/false)");
-                        boolean isAvailable = Boolean.parseBoolean(scanner.nextLine());
-                        book.updateBook(bookName, bookAuthor, bookYear, bookISBN, isAvailable, bookGenre);
-                    }
+                    if (book != null) { while(true) {
+                        System.out.println("What would you like to update?");
+                        System.out.println("1. Update Title");
+                        System.out.println("2. Update Author");
+                        System.out.println("3. Update Year");
+                        System.out.println("4. Update ISBN");
+                        System.out.println("5. Update Genre");
+                        System.out.println("6. Mark Unavailable");
+                        System.out.println("7. Mark Available");
+                        System.out.println("8. Print Book Info");
+                        System.out.println("9. Exit");
+                        System.out.println("+----------------------+");
+                        System.out.println(">");
+                        input = scanner.nextLine().trim();
+                        if(input.equalsIgnoreCase("8")) {
+                            break;
+                        }
+                        switch (input.toLowerCase()) {
+                            case "1":
+                                System.out.println("Enter New Book Title");
+                                title = scanner.nextLine().trim();
+                                book.updateBook(Optional.of(title), Optional.empty(),
+                                        Optional.empty(),Optional.empty(),
+                                        Optional.empty(),Optional.empty());
+                                break;
+                            case "2":
+                                System.out.println("Enter New Book Author");
+                                bookAuthor = scanner.nextLine().trim();
+                                book.updateBook(Optional.empty(), Optional.of(bookAuthor),
+                                        Optional.empty(),Optional.empty(),
+                                        Optional.empty(),Optional.empty());
+                                break;
+                            case "3":
+                                System.out.println("Enter New Book Year");
+                                bookYear = scanner.nextInt();
+                                book.updateBook(Optional.empty(), Optional.empty(),
+                                        Optional.of(bookYear),Optional.empty(),
+                                        Optional.empty(),Optional.empty());
+                                break;
+                            case "4":
+                                System.out.println("Enter New Book ISBN");
+                                bookISBN = scanner.nextLine().trim();
+                                book.updateBook(Optional.empty(), Optional.empty(),
+                                        Optional.empty(),Optional.of(bookISBN),
+                                        Optional.empty(),Optional.empty());
+                                break;
+                            case "5":
+                                System.out.println("Enter New Book Genre");
+                                bookGenre = scanner.nextLine().trim();
+                                book.updateBook(Optional.empty(), Optional.empty(),
+                                        Optional.empty(),Optional.empty(),
+                                        Optional.empty(),Optional.of(bookGenre));
+                                break;
+                            case "6":
+                                System.out.println("Book marked unavailable");
+                                book.updateBook(Optional.empty(), Optional.empty(),
+                                        Optional.empty(),Optional.empty(),
+                                        Optional.of(false),Optional.empty());
+                                break;
+                            case "7":
+                                System.out.println("Book marked available");
+                                book.updateBook(Optional.empty(), Optional.empty(),
+                                        Optional.empty(),Optional.empty(),
+                                        Optional.of(true),Optional.empty());
+                                break;
+                            case "8":
+                                System.out.println("Book marked unavailable");
+                                book.getBookInfo();
+                                break;
+                        }
+                    }}
                     printMenu();
                     break;
                 case "4":

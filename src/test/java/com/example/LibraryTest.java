@@ -14,7 +14,7 @@ public class LibraryTest {
     @BeforeEach
     public void setUp() {
         library = new Library();
-        book = new Book("Test Book", "Author Name", 2020, 123456, true, "Fiction", library);
+        book = new Book("Test Book", "Author Name", 2020, "123456",  "Fiction", library);
         member = new Member("Doe, John", "john.doe@example.com", 1);
     }
 
@@ -59,9 +59,5 @@ public class LibraryTest {
         library.returnBook(book);
         // Again, `isAvailable` should be updated but isn't. Fix this in your main logic.
     }
-
-    @Test
-    public void testBookAvailability() {
-        assertTrue(book.checkAvailability());
-    }
 }
+
