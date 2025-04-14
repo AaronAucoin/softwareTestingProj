@@ -248,8 +248,9 @@ class Member {
 
     // adds a book to a Member's borrowed book list
     // used when Library class checks out a book
-    public void addBorrowedBook(Book book) {
+    public List<Book> addBorrowedBook(Book book) {
         borrowedBookList.add(book);
+        return borrowedBookList;
     }
 
     // updates a member's info to the specified values
