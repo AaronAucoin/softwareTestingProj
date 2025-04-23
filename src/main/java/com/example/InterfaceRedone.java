@@ -8,9 +8,10 @@ class InterfaceRedone {
         System.out.println("Input menu number to run command");
         printMenu();
 
+        boolean running = true;
         // switch case break statement for menu options
-        while (true) {
-            runSwitch(in, lib);
+        while (running) {
+            running = runSwitch(in, lib);
         }
     }
 
@@ -30,7 +31,7 @@ class InterfaceRedone {
         System.out.println("+-----------------------+\n");
     }
 
-    public void runSwitch(Scanner in, Library lib) {
+    public boolean runSwitch(Scanner in, Library lib) {
         System.out.print("> ");
         String answer = in.nextLine();
         switch (answer) {
@@ -39,35 +40,223 @@ class InterfaceRedone {
                 printMenu();
                 break;
             case "2": // removeBook
-            // removes a book with a given title from the library
+                // removes a book with a given title from the library
                 removeBook(in, lib);
                 break;
             case "3": // updateBook
-
+                updateBook(in, lib);
                 break;
             case "4": // addMember
-
+                addMember(in, lib);
                 break;
             case "5": // removeMember
-
+                removeMember(in, lib);
                 break;
             case "6": // checkoutBook
-
+                checkoutBook(in, lib);
                 break;
             case "7": // returnBook
-
+                returnBook(in, lib);
                 break;
             case "8": // printMemberInfo
-
+                printMemberInfo(in, lib);
                 break;
             case "9": // printAllBookNames
-
+                printAllBookNames(in, lib);
                 break;
-            case "10": // printMemberInfo
+            case "10": // help
                 printMenu();
                 break;
+            case "11": // EXIT
+                System.out.println("Have a nice day!");
+                return false;
             default:
-                System.out.println("IDK WHAT YOU'RE TYPING! " + in);
+                System.out.println("Unknown command! " + in);
+        }
+        return true;
+    }
+
+    private void printAllBookNames(Scanner in, Library lib) {
+        System.out.println("Printing all books");
+        List<Book> allBooks = lib.getAllBooks();
+        for (Book book : allBooks) {
+            book.getBookInfo();
+        }
+        System.out.println();
+    }
+
+    private void printMemberInfo(Scanner in, Library lib) {
+        System.out.println("Enter Member ID:");
+        int id = Integer.parseInt(in.nextLine().trim());
+        Member member = lib.getMember(null, id);
+        if (member != null) {
+            member.printMemberInfo();
+        } else {
+            System.out.println("Member not found.");
+        }
+    }
+
+    private void returnBook(Scanner in, Library lib) {
+        String bookName;
+        Book book;
+        System.out.println("Enter Book Title:");
+        bookName = in.nextLine().trim().toLowerCase();
+        book = lib.findBookIdByName(bookName);
+
+        if (book != null) {
+            lib.returnBook(book);
+            book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(true),
+                    Optional.empty());
+            System.out.println("Book returned successfully.");
+        } else {
+            System.out.println("Book not found.");
+        }
+    }
+
+    private void checkoutBook(Scanner in, Library lib) {
+        System.out.println("Enter Book Title:");
+        String bookName = in.nextLine().trim().toLowerCase();
+        Book book = lib.findBookIdByName(bookName);
+
+        System.out.println("Enter Member ID:");
+        int memId = Integer.parseInt(in.nextLine().trim());
+        Member member = lib.getMember(null, memId);
+
+        if (book != null && member != null && book.checkAvailability()) {
+            lib.checkoutBook(book, member);
+            book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false),
+                    Optional.empty());
+            System.out.println("Book checked out successfully.");
+        } else {
+            System.out.println("Error: Book not found, unavailable, or member ID invalid.");
+        }
+        member.printMemberInfo();
+    }
+
+    private void removeMember(Scanner in, Library lib) {
+        // asks for a member's name and ID
+        // removes that member from the memberID list and allMembers list
+        System.out.println("Enter Member Name (Last, First)");
+        String memberName = in.nextLine().trim();
+
+        System.out.println("Enter Member ID");
+        int memberID = Integer.parseInt(in.nextLine().trim());
+        Member member = lib.getMember(memberName, memberID);
+        lib.removeMember(member);
+    }
+
+    private void addMember(Scanner in, Library lib) {
+        // asks for all necessary member info (name, email)
+        // constructor auto-generates memberID and empty borrowedBookList
+        System.out.println("Enter Member Name (Last, First)");
+        String memberName = in.nextLine().trim();
+
+        System.out.println("Enter Member email");
+        String memberEmail = in.nextLine().trim(); // we could maybe do a check for legit emails later?
+                                                   // absolutely not ^^^
+        Member member = lib.addMember(memberName, memberEmail);
+        member.printMemberInfo();
+    }
+
+    private void updateBook(Scanner in, Library lib) {
+        // updates a given books info in the library
+        System.out.println("Enter Book Title");
+        String updateTitle = in.nextLine().trim().toLowerCase();
+        Book book = lib.findBookIdByName(updateTitle);
+
+        if (book != null) {
+            while (true) {
+                // asks for which info to update and updates it
+                System.out.println("What would you like to update?");
+                System.out.println("1. Update Title");
+                System.out.println("2. Update Author");
+                System.out.println("3. Update Year");
+                System.out.println("4. Update ISBN");
+                System.out.println("5. Update Genre");
+                System.out.println("6. Mark Unavailable");
+                System.out.println("7. Mark Available");
+                System.out.println("8. Print Book Info");
+                System.out.println("9. Exit");
+                System.out.println("+----------------------+");
+                System.out.print("> ");
+
+                String input = in.nextLine().trim();
+
+                if (input.equalsIgnoreCase("9"))
+                    break;
+
+                // updates the book with the new info
+                switch (input.toLowerCase()) {
+                    case "1": // update title
+                        System.out.println("Enter New Book Title:");
+                        String title = in.nextLine().trim();
+                        book.updateBook(Optional.of(title), Optional.empty(),
+                                Optional.empty(), Optional.empty(),
+                                Optional.empty(), Optional.empty());
+                        break;
+
+                    case "2": // update author
+                        System.out.println("Enter New Book Author:");
+                        String bookAuthor = in.nextLine().trim();
+                        book.updateBook(Optional.empty(), Optional.of(bookAuthor),
+                                Optional.empty(), Optional.empty(),
+                                Optional.empty(), Optional.empty());
+                        break;
+
+                    case "3": // update year
+                        System.out.println("Enter New Book Year:");
+                        try {
+                            int bookYear = in.nextInt();
+                            in.nextLine(); // clear newline
+                            book.updateBook(Optional.empty(), Optional.empty(),
+                                    Optional.of(bookYear), Optional.empty(),
+                                    Optional.empty(), Optional.empty());
+                        } catch (Exception e) {
+                            System.out.println("Improper type:  " + e);
+                            in.nextLine(); // clear invalid input
+                        }
+                        break;
+
+                    case "4": // update ISBN
+                        System.out.println("Enter New Book ISBN:");
+                        String bookISBN = in.nextLine().trim();
+                        book.updateBook(Optional.empty(), Optional.empty(),
+                                Optional.empty(), Optional.of(bookISBN),
+                                Optional.empty(), Optional.empty());
+                        break;
+
+                    case "5": // update genre
+                        System.out.println("Enter New Book Genre:");
+                        String bookGenre = in.nextLine().trim();
+                        book.updateBook(Optional.empty(), Optional.empty(),
+                                Optional.empty(), Optional.empty(),
+                                Optional.empty(), Optional.of(bookGenre));
+                        break;
+
+                    case "6": // mark unavailable
+                        System.out.println("Book marked unavailable");
+                        book.updateBook(Optional.empty(), Optional.empty(),
+                                Optional.empty(), Optional.empty(),
+                                Optional.of(false), Optional.empty());
+                        break;
+
+                    case "7": // mark available
+                        System.out.println("Book marked available");
+                        book.updateBook(Optional.empty(), Optional.empty(),
+                                Optional.empty(), Optional.empty(),
+                                Optional.of(true), Optional.empty());
+                        break;
+
+                    case "8": // print book info
+                        System.out.println("Book Info:");
+                        book.getBookInfo();
+                        break;
+
+                    default: // invalid option
+                        System.out.println("Invalid option!");
+                        break;
+                }
+            }
         }
     }
 

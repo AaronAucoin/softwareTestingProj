@@ -1,4 +1,5 @@
 package com.example;
+
 import java.util.*;
 
 class Library {
@@ -6,13 +7,15 @@ class Library {
     // i think this should include currently loaned books
     private List<Book> allBooksInLibrary;
 
-    // i think we should implement this as a hashmap of books and the member checking it out
+    // i think we should implement this as a hashmap of books and the member
+    // checking it out
     // this makes it easier to access these logically linked values
     private HashMap<Book, Member> loanedBooks;
     private List<Integer> memberIDs; // list of Unique Integer values denoting each member
-    private List<Member> allMembers;//list of all members in the Library
-//
+    private List<Member> allMembers;// list of all members in the Library
+    //
     // constructor for a library object
+
     public Library() {
         this.allBooksInLibrary = new ArrayList<>();
         this.loanedBooks = new HashMap<>();
@@ -36,7 +39,7 @@ class Library {
     }
 
     // generates a new unique bookID to add a book to the library
-    public int generateBookID () {
+    public int generateBookID() {
         return allBooksInLibrary.size() + 1;
     }
 
@@ -45,7 +48,8 @@ class Library {
     public void checkoutBook(Book book, Member member) {
         loanedBooks.put(book, member);
         member.addBorrowedBook(book);
-        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false), Optional.empty()); 
+        book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false),
+                Optional.empty());
     }
 
     // removes a Book, Member pair from the loaned books HashMap
@@ -69,7 +73,7 @@ class Library {
     // maybe there will be a list of members stored somewhere to remove this from??
     // we should add logging or some verification type for this
     public void removeMember(Member member) {
-        if(member == null) {
+        if (member == null) {
             System.out.println("Attempted to remove a null Member");
             return;
         }
@@ -79,7 +83,7 @@ class Library {
 
     // finds member object from allMember list given name (last, first) and memberID
     public Member getMember(String memberName, int memberID) {
-        if(memberName == null) {
+        if (memberName == null) {
             for (Member member : allMembers) {
                 if (member.getMemberId() == memberID) {
                     return member;
@@ -103,7 +107,8 @@ class Library {
     }
 
     // returns which member checked out a book
-    // references the loanedBooks hashmap for the member object and prints their info
+    // references the loanedBooks hashmap for the member object and prints their
+    // info
     // we could change this at some point to only return the name
     // also MAYBE be changed to only need a books name instead of the object
     public void whoHasBook(Book book) {
@@ -119,8 +124,8 @@ class Library {
     // takes a book's name and returns the corresponding Book object
     public Book findBookIdByName(String title) {
         for (Book book : allBooksInLibrary) {
-            if(book.getBookInfo().get(0).equalsIgnoreCase(title)) {
-                return(book);
+            if (book.getBookInfo().get(0).equalsIgnoreCase(title)) {
+                return (book);
             }
         }
         System.out.println("Book" + title + "not found");
