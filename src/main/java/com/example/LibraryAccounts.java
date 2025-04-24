@@ -10,37 +10,45 @@ public class LibraryAccounts {
     }
 
     //donations of money can be added
-    public void addDonation(double amount){
+    // returns a string describing the money added and the new balance
+    // returns null if a negative amount of money tries to be donated
+    public String addDonation(double amount){
         if (amount <= 0){
             System.out.println("Invalid donation amount.");
-            return;
+            return null;
         }
         operatingCash += amount;
-        System.out.printf("Donation of $%.2f added. New balance: $%.2f", amount, operatingCash);
+        return String.format("Donation of $%.2f added. New balance: $%.2f", amount, operatingCash);
     }
 
-    //Librarian can withdraw their salary
-    public boolean withdrawSalary(double amount){
+    // Librarian can withdraw their salary
+    // String describing this action is returned
+    // returns null if withdraw amount is negative
+    public String withdrawSalary(double amount) {
         if(amount <= 0 || amount > operatingCash){
             System.out.println("Invalid amount");
-            return false;
+            return null;
         }
         operatingCash -= amount;
-        System.out.printf("Salary withdrawn: $%.2f. New balance: $%.2f", amount, operatingCash);
-        return true;
+        return String.format("Salary withdrawn: $%.2f. New balance: $%.2f", amount, operatingCash);
     }
 
-    public boolean orderBook(String title, double cost){
-        if(cost <= 0 || cost > operatingCash){
-            System.out.println("Invalid amount");
-            return false;
+    // Librarian can order a book
+    // returns a string describing this order
+    // returns an error string if the cost of the book is negative or is more than operating cash
+    // the cost of the book could, alternatively, be randomly generated in this function
+    public String orderBook(String title, double cost){
+        if(cost <= 0){
+            return "Negative book cost is invalid ";
+        } else if (cost > operatingCash) {
+            return "Book cost is higher than operating balance";
         }
         operatingCash -= cost;
         purchasing.purchaseBook(title, cost);
-        System.out.printf("Book ordered: %s. New balance: $%.2f", title, operatingCash);
-        return true;
+        return String.format("Book ordered: %s. New balance: $%.2f", title, operatingCash);
     }
 
+    // returns the current operating cash balance
     public double gerOperatingCash(){
         return operatingCash;
     }
