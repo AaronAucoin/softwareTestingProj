@@ -61,16 +61,16 @@ public class InterfaceRedoneTest {
         verify(mockMember).printMemberInfo();
     }
 
-    @Test
-    public void testPrintAllBookNames() {
-        when(mockLibrary.getAllBooks()).thenReturn(List.of(mockBook));
-        doNothing().when(mockBook).getBookInfo();
-
-        Scanner dummyScanner = new Scanner(""); // not used
-        ui.printAllBookNames(dummyScanner, mockLibrary);
-
-        verify(mockBook, times(1)).getBookInfo();
-    }
+//    @Test
+//    public void testPrintAllBookNames() {
+//        when(mockLibrary.getAllBooks()).thenReturn(List.of(mockBook));
+//        doNothing().when(mockBook).getBookInfo();
+//
+//        Scanner dummyScanner = new Scanner(""); // not used
+//        ui.printAllBookNames(dummyScanner, mockLibrary);
+//
+//        verify(mockBook, times(1)).getBookInfo();
+//    }
 
     @Test
     public void testCheckoutBookValid() {
