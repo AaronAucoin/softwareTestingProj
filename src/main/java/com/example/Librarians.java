@@ -1,6 +1,7 @@
 package com.example;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 // this class has the following functionality:
@@ -75,7 +76,7 @@ public class Librarians {
         return null;
     }
 
-    public Map<Book, Double> getBooksPurchasedByLibrarian(String librarianName) {
+    public Map<Book, Double> getMapBooksPurchasedByLibrarian(String librarianName) {
         Librarian lib = findLibrarianByName(librarianName);
         return (lib != null) ? lib.getBooksPurchasedByLibrarian() : null;
     }
@@ -88,6 +89,27 @@ public class Librarians {
         }
         return null;
     }
+
+    public List<Book> getListLibrarianPurchasedBooks(String librarianName){
+        Librarian lib = findLibrarianByName(librarianName);
+        if (lib != null) {
+            return new ArrayList<>(lib.getBooksPurchasedByLibrarian().keySet());
+        }
+        return null;
+    }
+
+    public Double getLibrarianPurchasedBooksTotalValue(String librarianName) {
+        Librarian lib = findLibrarianByName(librarianName);
+        if (lib != null) {
+            double total_value = 0;
+            for (double value : lib.getBooksPurchasedByLibrarian().values()) {
+                total_value += value;
+            }
+            return total_value;
+        }
+        return null;
+    }
+
 
     private class Librarian {
         private String name;
