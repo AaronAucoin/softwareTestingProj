@@ -39,7 +39,7 @@ public class LibraryAccounts {
     // the cost of the book could, alternatively, be randomly generated in this function
     public String orderBook(String title, double cost){
         if(cost <= 0){
-            return "Negative book cost is invalid ";
+            return null;
         } else if (cost > operatingCash) {
             return "Book cost is higher than operating balance";
         }
