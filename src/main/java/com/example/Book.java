@@ -1,7 +1,7 @@
 package com.example;
 import java.util.*;
 
-class Book {
+public class Book {
     private String name; // title of the book
     private String author; // author of the book
     private int year; // books year of publication

@@ -2,7 +2,8 @@ package com.example;
 
 import java.util.*;
 
-class Library {
+
+public class Library {
     // list of all books possessed by the library
     // i think this should include currently loaned books
     private List<Book> allBooksInLibrary;
