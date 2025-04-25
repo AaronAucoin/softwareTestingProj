@@ -10,5 +10,8 @@
         <module name="containsAny" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="LibraryManagementSystem" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>

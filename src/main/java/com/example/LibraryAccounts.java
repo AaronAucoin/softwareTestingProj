@@ -49,7 +49,7 @@ public class LibraryAccounts {
     }
 
     // returns the current operating cash balance
-    public double gerOperatingCash(){
+    public double getOperatingCash(){
         return operatingCash;
     }
 }
