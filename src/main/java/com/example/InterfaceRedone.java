@@ -3,7 +3,9 @@ package com.example;
 import java.util.*;
 
 class InterfaceRedone {
-    public void doInterface(Library lib) {
+
+    private boolean fulltime = false;
+    public void doInterface(Library lib, Librarians librarians) {
         Scanner in = new Scanner(System.in);
         System.out.println("Input menu number to run command");
         printMenu();
@@ -11,12 +13,13 @@ class InterfaceRedone {
         boolean running = true;
         // switch case break statement for menu options
         while (running) {
-            running = runSwitch(in, lib);
+            running = runSwitch(in, lib, librarians);
         }
         in.close();
     }
 
     public void printMenu() {
+        System.out.println("0. Login as Librarian(full-time)");
         System.out.println("+-----------------------+");
         System.out.println("1. Add Book");
         System.out.println("2. Remove Book");
@@ -32,10 +35,17 @@ class InterfaceRedone {
         System.out.println("+-----------------------+\n");
     }
 
-    public boolean runSwitch(Scanner in, Library lib) {
+    public boolean runSwitch(Scanner in, Library lib, Librarians librarians) {
+        if(fulltime){
+            System.out.println("FULLTIME HERE YOU CAN HAVE MORE OPTIONS!!!");
+        }
+
         System.out.print("> ");
         String answer = in.nextLine();
         switch (answer) {
+            case "0":
+                fulltime = loginFullTime(in, librarians);
+                break;
             case "1": // addBook
                 addBook(in, lib);
                 printMenu();
@@ -65,16 +75,26 @@ class InterfaceRedone {
             case "9": // printAllBookNames
                 printAllBookNames(in, lib);
                 break;
-            case "10": // help
-                printMenu();
-                break;
-            case "11": // EXIT
-                System.out.println("Have a nice day!");
-                return false;
+            case "10":
+                revokeMembership();
+//            case "10": // help
+//                printMenu();
+//                break;
+//            case "11": // EXIT
+//                System.out.println("Have a nice day!");
+//                return false;
             default:
                 System.out.println("Unknown command! " + in);
         }
         return true;
+    }
+
+    private void revokeMembership() {
+    }
+
+    private boolean loginFullTime(Scanner in, Librarians librarians) {
+        System.out.println("Enter librarian code: ");
+        return false;
     }
 
     public void printAllBookNames(Scanner in, Library lib) {

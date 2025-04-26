@@ -90,15 +90,17 @@ public class Library {
                     return member;
                 }
             }
-        }
-        for (Member member : allMembers) {
-            if (member.getMemberId() == memberID && member.getName().equals(memberName)) {
-                return member;
+        } else {
+            for (Member member : allMembers) {
+                if (member.getMemberId() == memberID && member.getName().equalsIgnoreCase(memberName)) {
+                    return member;
+                }
             }
         }
         System.out.println("Member not found");
         return null;
     }
+
 
     // returns if a book object is available
     // I think in the long run this should be modified to
