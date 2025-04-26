@@ -31,6 +31,11 @@ public class Book {
         return isAvailable;
     }
 
+    // Returns a book objects title
+    public String getName() {
+        return name;
+    }
+
     // changes a book's values to the new values
     // could be changed to have nulls for parameters to not update those things
     // bookID should not be manually changeable
