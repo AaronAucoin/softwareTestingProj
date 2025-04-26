@@ -37,14 +37,8 @@ public class LibraryAccounts {
     // returns a string describing this order
     // returns an error string if the cost of the book is negative or is more than operating cash
     // the cost of the book could, alternatively, be randomly generated in this function
-    public String orderBook(String title, double cost){
-        if(cost <= 0){
-            return null;
-        } else if (cost > operatingCash) {
-            return "Book cost is higher than operating balance";
-        }
-        operatingCash -= cost;
-        purchasing.purchaseBook(title, cost);
+    public String orderBook(String title){
+        double cost = purchasing.purchaseBook(title);
         return String.format("Book ordered: %s. New balance: $%.2f", title, operatingCash);
     }
 

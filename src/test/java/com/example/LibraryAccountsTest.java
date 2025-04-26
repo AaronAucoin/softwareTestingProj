@@ -67,29 +67,29 @@ public class LibraryAccountsTest {
     // verify that the purchasing class purchaseBook() method is called correctly
     @Test
     void testOrderBookValid(){
-       String result = libraryAccounts.orderBook("The Hobbit", 150);
+       String result = libraryAccounts.orderBook("The Hobbit");
        assertNotNull(result);
        assertTrue(result.contains("The Hobbit"));
 
-       verify(mockPurchasing).purchaseBook("The Hobbit", 150);
+       verify(mockPurchasing).purchaseBook("The Hobbit");
     }
 
     // assert that null is returned when trying to order a negative cost book
     // verify that purchase book is not called when attempting to purchase a negative cost book
     @Test
     void testOrderBookCostNegative(){
-        String result = libraryAccounts.orderBook("The Hobbit", -1);
+        String result = libraryAccounts.orderBook("The Hobbit");
         assertNull(result);
-        verify(mockPurchasing, never()).purchaseBook(anyString(), anyDouble());
+        verify(mockPurchasing, never()).purchaseBook(anyString());
     }
 
     // assert that correct error string is returned when orderBook cost is higher than operating budget
     // verify the purchaseBook() is not called when book cost is too high
     @Test
     void testOrderBookCostTooMuch(){
-        String result = libraryAccounts.orderBook("The Hobbit", 1000000.00);
+        String result = libraryAccounts.orderBook("The Hobbit");
         assertEquals("Book cost is higher than operating balance", result);
 
-        verify(mockPurchasing, never()).purchaseBook(anyString(), anyDouble());
+        verify(mockPurchasing, never()).purchaseBook(anyString());
     }
 }

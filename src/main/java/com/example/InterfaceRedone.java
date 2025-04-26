@@ -13,6 +13,7 @@ class InterfaceRedone {
         while (running) {
             running = runSwitch(in, lib);
         }
+        in.close();
     }
 
     public void printMenu() {
@@ -118,9 +119,19 @@ class InterfaceRedone {
         String bookName = in.nextLine().trim().toLowerCase();
         Book book = lib.findBookIdByName(bookName);
 
+        if (book == null) {
+            System.out.println("ERROR: Book not found.");
+            return;
+        }
+
         System.out.println("Enter Member ID:");
         int memId = Integer.parseInt(in.nextLine().trim());
         Member member = lib.getMember(null, memId);
+
+        if (member == null) {
+            System.out.println("ERROR: Member not found.");
+            return;
+        }
 
         if (book != null && member != null && book.checkAvailability()) {
             lib.checkoutBook(book, member);

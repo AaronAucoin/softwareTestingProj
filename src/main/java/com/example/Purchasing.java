@@ -3,8 +3,8 @@ package com.example;
 import java.util.Random;
 
 public class Purchasing {
-    Random random = new Random();
-
-    public void purchaseBook(String title, double cost) {
+    private Random random = new Random();
+    public double purchaseBook(String title) {
+        return (10.0 + random.nextDouble() * (100.0-10.0));
     }
 }
