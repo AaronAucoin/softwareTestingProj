@@ -7,6 +7,21 @@ class InterfaceRedone {
     private boolean fulltime = false;
     public void doInterface(Library lib, Librarians librarians) {
         Scanner in = new Scanner(System.in);
+
+        System.out.println("Login");
+        System.out.print("Username: ");
+        String name = in.nextLine();
+
+        System.out.print("Password: ");
+        short password = in.nextShort();
+        short[] authPassword = convertNumToShortArr(password);
+
+        if(librarians.checkLibrarianAuthenticationCode(name, authPassword)){
+            fulltime = true;
+            System.out.println("WELCOME FULL TIME LIBRARIAN!!!");
+        }
+
+
         System.out.println("Input menu number to run command");
         printMenu();
 
@@ -16,6 +31,27 @@ class InterfaceRedone {
             running = runSwitch(in, lib, librarians);
         }
         in.close();
+    }
+
+    private short[] convertNumToShortArr(short password){
+        if(password <0){
+            return null;
+        }
+
+        int count = 0;
+        int temp = password;
+        while (temp > 0) {
+            temp /= 10;
+            count++;
+        }
+
+        short[] digits = new short[count];
+        for (int i = count - 1; i >= 0; i--) {
+            digits[i] = (short)(password % 10);
+            password /= 10;
+        }
+
+        return digits;
     }
 
     public void printMenu() {
@@ -75,22 +111,32 @@ class InterfaceRedone {
             case "9": // printAllBookNames
                 printAllBookNames(in, lib);
                 break;
-            case "10":
-                revokeMembership();
-//            case "10": // help
-//                printMenu();
-//                break;
-//            case "11": // EXIT
-//                System.out.println("Have a nice day!");
-//                return false;
+            case "10": // help
+                printMenu();
+                break;
+            case "11": // EXIT
+                System.out.println("Have a nice day!");
+                return false;
             default:
                 System.out.println("Unknown command! " + in);
         }
         return true;
     }
 
-    private void revokeMembership() {
-    }
+//    public boolean revokeMembership(Scanner in, Library lib, Librarians librarians) {
+//        if(checkFullTimeAuth(in, librarians)){
+//            System.out.println("Enter member name to remove:");
+//            String name = in.nextLine();
+//            System.out.println("Enter member ID to remove: ");
+//            int id = in.nextInt();
+//            Member memberToRemove = lib.getMember(name, id);
+//            lib.removeMember(memberToRemove);
+//            System.out.println("Member Removed");
+//            return true;
+//        }
+//        System.out.println("Invalid auth. Or Error");
+//        return false;
+//    }
 
     private boolean loginFullTime(Scanner in, Librarians librarians) {
         System.out.println("Enter librarian code: ");

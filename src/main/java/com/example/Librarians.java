@@ -51,7 +51,7 @@ public class Librarians {
     public Boolean checkLibrarianAuthenticationCode(String librarianName, short[] AuthenticationCode) {
         Librarian lib = findLibrarianByName(librarianName);
         if (lib == null || AuthenticationCode == null) {
-            return null;
+            return false;
         }
         for (int i = 0; i < AuthenticationCode.length; i++) {
             if (AuthenticationCode[i] != lib.getAuthenticationCode()[i]) {
