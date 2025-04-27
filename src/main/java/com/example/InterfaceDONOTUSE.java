@@ -1,7 +1,7 @@
 package com.example;
 import java.util.*;
 
-class Interface {
+class InterfaceDONOTUSE {
     // only one function that has a loop of looking for commands and executing them
     public void doInterface(Library library) {
         Scanner scanner = new Scanner(System.in);
