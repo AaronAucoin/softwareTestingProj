@@ -22,20 +22,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class InterfaceTest {
-    private Library mockLibrary;
+    private Library library;
     private LibraryAccounts mockLibraryAccounts;
     private Librarians librarians;
 
 
     @BeforeEach
     void setUp() {
-        mockLibrary = Mockito.mock(Library.class);
+        library = new Library();
         mockLibraryAccounts = Mockito.mock(LibraryAccounts.class);
         librarians = new Librarians();
         Scanner scanner = new Scanner(System.in);
     }
 
-    // function for inputting fake strings and getting the result of the interface from that
+    // function for inputting fake input strings and getting the result of the interface from that
     private String fakeInput(String fakeInput) {
         // Step 1: Capture output first
         ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
@@ -49,7 +49,7 @@ public class InterfaceTest {
         Scanner mockScanner = new Scanner(System.in);
 
         // Step 4: Initialize the Interface with the mock Scanner
-        Interface interfaceTest = new Interface(mockLibrary, mockLibraryAccounts, librarians, mockScanner);
+        Interface interfaceTest = new Interface(library, mockLibraryAccounts, librarians, mockScanner);
 
         // Step 5: Call the function to trigger login (or any other I/O operations in loadInterface)
         try {
@@ -105,7 +105,73 @@ public class InterfaceTest {
     // test functions 4-6 here
 
     // test functions 7-9 here
-    
+    // testing function removeMember (option 7)
+    @Test
+    public void testRemoveMember() {
+        PrintStream originalOut = System.out; // Save original System.out
+
+        String capturedOutput = fakeInput("Bob\n111111\n7\nSmith, John\n1\n0\n");
+
+        // Step 7: Perform assertions to check if the expected behavior occurred
+        assertTrue(capturedOutput.contains("Member removed successfully."));
+
+        // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
+
+    // testing function printMemberInfo
+    @Test
+    public void testPrintMemberInfo() {
+        PrintStream originalOut = System.out;
+
+        String capturedOutput = fakeInput("Bob\n111111\n8\n1\n0\n");
+
+        // Step 7: Perform assertions to check if the expected behavior occurred
+        assertTrue(capturedOutput.contains("Name: Smith, John"));
+
+        // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
+
+    // testing addDonation of valid (positive) amount
+    @Test
+    public void testAddDonationValidAmount() {
+        PrintStream originalOut = System.out;
+
+        when(mockLibraryAccounts.addDonation(1000)).thenReturn("Donation of $1000.00 added. New balance: $40000.00");
+        String capturedOutput = fakeInput("Bob\n111111\n9\n1000\n0\n");
+
+        // Step 7: Perform assertions to check if the expected behavior occurred
+        assertTrue(capturedOutput.contains("Enter donation amount:"));
+        assertTrue(capturedOutput.contains("Donation of $1000.00 added. New balance: $40000.00"));
+        verify(mockLibraryAccounts).addDonation(1000);
+
+
+        // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
+
+    // testing addDonation (Function 9) of valid (negative) amount
+    @Test
+    public void testAddDonationInvalidAmount() {
+        PrintStream originalOut = System.out;
+
+        when(mockLibraryAccounts.addDonation(-1000)).thenReturn(null);
+        String capturedOutput = fakeInput("Bob\n111111\n9\n-1000\n0\n");
+
+        // Step 7: Perform assertions to check if the expected behavior occurred
+        assertTrue(capturedOutput.contains("Enter donation amount:"));
+        assertTrue(capturedOutput.contains("Donation amount attempted is invalid: -1000"));
+        verify(mockLibraryAccounts).addDonation(-1000);
+
+
+        // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
 
     // test functions 10-12 here
     // testing withdraw salary amount (option 10) with valid amount
@@ -119,6 +185,7 @@ public class InterfaceTest {
         String capturedOutput = fakeInput("Alice\n000000\n10\n100\n0\n");
 
         // Step 7: Perform assertions to check if the expected behavior occurred
+        verify(mockLibraryAccounts).withdrawSalary("Alice", 100);
         assertTrue(capturedOutput.contains("Enter salary amount to withdraw:"));
         assertTrue(capturedOutput.contains("Salary withdrawn: $100.00. New balance: $38900.00"));
         assertTrue(capturedOutput.contains("Exiting system. Goodbye!"));
@@ -139,6 +206,7 @@ public class InterfaceTest {
         String capturedOutput = fakeInput("Alice\n000000\n10\n-100\n0\n");
 
         // Step 7: Perform assertions to check if the expected behavior occurred
+        verify(mockLibraryAccounts).withdrawSalary("Alice", -100);
         assertTrue(capturedOutput.contains("Enter salary amount to withdraw:"));
         assertFalse(capturedOutput.contains("Salary withdrawn: $100.00. New balance: $38900.00"));
         assertTrue(capturedOutput.contains("Salary amount attempted is invalid: " + -100));
@@ -160,6 +228,7 @@ public class InterfaceTest {
         String capturedOutput = fakeInput("Alice\n000000\n10\n4000000\n0\n");
 
         // Step 7: Perform assertions to check if the expected behavior occurred
+        verify(mockLibraryAccounts).withdrawSalary("Alice", 4000000);
         assertTrue(capturedOutput.contains("Enter salary amount to withdraw:"));
         assertFalse(capturedOutput.contains("Salary withdrawn: $100.00. New balance: $38900.00"));
         assertTrue(capturedOutput.contains("Salary amount attempted is invalid: " + 4000000));

@@ -271,6 +271,9 @@ public class Interface {
         if (result != null) {
             System.out.println(result);
         }
+        else {
+            System.out.println("Donation amount attempted is invalid: " + amount);
+        }
     }
 
     private void withdrawSalary() {
