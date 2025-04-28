@@ -36,7 +36,6 @@ public class LibraryAccounts {
     // returns null if withdraw amount is negative
     public String withdrawSalary(String librarianName, double amount) {
         if(amount <= 0 || amount > operatingCash){
-            System.out.println("Invalid amount");
             return null;
         }
         operatingCash -= amount;
