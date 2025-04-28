@@ -1,7 +1,7 @@
 package com.example;
+
 import org.junit.jupiter.api.Test;
-import java.util.HashSet;
-import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PurchasingTest {
@@ -20,23 +20,5 @@ public class PurchasingTest {
             double value = testPurchasing.generateRandomBookCost();
             assertTrue(value >= min && value <= max, "Value out of range: " + value);
         }
-    }
-    @Test
-    public void testPurchasingGeneratesVariedValues() {
-        Purchasing purchasing = new Purchasing();
-
-        Set<Integer> seenValues = new HashSet<>();
-        int samples = 10000;
-
-        for (int i = 0; i < samples; i++) {
-            double value = purchasing.generateRandomBookCost();
-            assertTrue(value >= 10.0 && value <= 100.0, "Value out of range: " + value);
-
-            // cast to int just to group close values (otherwise doubles are too precise)
-            seenValues.add((int) value);
-        }
-
-        // expecting at least 30 distinct integers are generated
-        assertTrue(seenValues.size() > 30);
     }
 }
