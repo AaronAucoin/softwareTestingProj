@@ -131,7 +131,7 @@ public class Library {
                 return (book);
             }
         }
-        System.out.println("Book" + title + "not found");
+        System.out.println("Book " + title + " not found");
         return null;
     }
 }

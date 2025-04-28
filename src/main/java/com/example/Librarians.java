@@ -23,6 +23,15 @@ public class Librarians {
             new Librarian("Carol", new short[]{2, 2, 2, 2, 2, 2})
     };
 
+    // returns the names of all full time librarians
+    public List<String> getLibrariansNames() {
+        List<String> librariansNames = new ArrayList<>();
+        for (Librarian librarian : librarianList) {
+            librariansNames.add(librarian.getName());
+        }
+        return librariansNames;
+    }
+
     // Private method to find a librarian object given a name
     private Librarian findLibrarianByName(String librarianName) {
         for (Librarian lib : librarianList) {
