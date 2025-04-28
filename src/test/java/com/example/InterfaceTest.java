@@ -138,23 +138,24 @@ public class InterfaceTest {
 
         // Corrected fake input
         String input = String.join("\n",
-                "Alice",                       // librarian name
-                "000000",                      // auth code
-                "3",                           // checkout book
-                "Test Book",                   // book title
-                "John Doe",                    // member name
+                "Alice",
+                "000000",
+                "3",
+                "Test Book",
+                "John Doe",
                 String.valueOf(member.getMemberId()),  // member id
-                "0"                            // exit
+                "0"
         );
         String capturedOutput = fakeInput(input);
 
         assertTrue(capturedOutput.contains("Book checked out successfully."), "Captured output should contain expected checkout message.");
-
         System.setOut(originalOut);
     }
 
 
 // test functions 4-6 here
+    //option 4:
+    //returningBook testing here
     public boolean returnBook(int bookId) {
         Book book = books.get(bookId);
         if (book == null || book.checkAvailability()) {
@@ -183,11 +184,11 @@ public class InterfaceTest {
     public void testPrintAllBooksList() {
         PrintStream originalOut = System.out;
 
-        // Setup: Add a book
+        // Add book
         Book book = new Book("Sample Book", "Sample Author", 2024, "9876543210", "Science", library);
         library.addBook(book);
 
-        // Simulate: login fulltime, select 5 to print all books, then exit
+        // login fulltime, select 5 to print all books, then exit
         String input = "Alice\n000000\n5\n0\n";
         String capturedOutput = fakeInput(input);
 
@@ -201,7 +202,7 @@ public class InterfaceTest {
     public void testAddMember() {
         PrintStream originalOut = System.out;
 
-        // Simulate: login fulltime, select 6 to add member, input name/email, then exit
+        // Simulate:   login fulltime, select 6 to add member, input name/email, then exit
         String input = "Alice\n000000\n6\nJohn Doe\njohn@example.com\n0\n";
         String capturedOutput = fakeInput(input);
 

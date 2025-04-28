@@ -4,15 +4,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+/**
+ * This class represents the main interface for interacting with the Library System.
+ * It handles librarian login, book operations, member management, donations, etc.
+ */
 public class Interface {
     private final Library library;
     private final LibraryAccounts libraryAccounts;
     private final Librarians librarians;
     private final Scanner scanner;
 
-    private boolean isFullTimeLibrarian = false;
-    private String currentLibrarianName = "";
+    private boolean isFullTimeLibrarian = false; // Tracks if the current librarian is full-time
+    private String currentLibrarianName = "";    // Name of the currently authenticated librarian
 
+    /**
+     * Constructor to initialize the interface with core library systems and input scanner.
+     */
     public Interface(Library library, LibraryAccounts libraryAccounts, Librarians librarians, Scanner scanner) {
         this.library = library;
         this.libraryAccounts = libraryAccounts;
@@ -20,6 +27,9 @@ public class Interface {
         this.scanner = scanner;
     }
 
+    /**
+     * Starts the interface: loads initial data, authenticates librarian, and shows the menu.
+     */
     public void loadInterface() {
         loadSomeStuff();
         System.out.println("Welcome to the Library Management System");
@@ -27,6 +37,9 @@ public class Interface {
         showMenu();
     }
 
+    /**
+     * Pre-load some sample members and books into the system for demo purposes.
+     */
     private void loadSomeStuff() {
         library.addMember("Smith, John", "john.smith@gmail.com");
         library.addMember("Rabbit, Jessica", "jessica.rabbit@i<3carrots.com");
@@ -34,25 +47,34 @@ public class Interface {
         library.addBook(new Book("The Hobbit", "JRR Tolkien", 1955, "57849345", "Fantasy", library));
     }
 
+    /**
+     * Authenticates a librarian: either full-time (with authentication code) or part-time (limited access).
+     */
     private void authenticateLibrarian() {
         int tries = 3;
         System.out.println("Enter Librarian Name:");
         String name = scanner.nextLine();
+
         while (tries > 0) {
             if (!librarians.getLibrariansNames().contains(name)) {
                 break;
             }
+
             System.out.println("Enter 6-digit Authentication Code (separate digits with space, or type 0 for part-time):");
             String[] codeInput = scanner.nextLine().split("");
+
+            // Part-time login shortcut
             if (Integer.parseInt(codeInput[0]) == 0 && codeInput.length == 1) {
                 break;
             }
+
             short[] authCode = new short[6];
             if (codeInput.length != 6) {
-                System.out.printf("Incorrect code, please try again. You have %d more tries.\n", tries-1);
+                System.out.printf("Incorrect code, please try again. You have %d more tries.\n", tries - 1);
                 tries--;
                 continue;
             }
+
             try {
                 for (int i = 0; i < 6; i++) {
                     authCode[i] = Short.parseShort(codeInput[i]);
@@ -63,17 +85,22 @@ public class Interface {
                     System.out.println("Authentication successful. Full-time librarian access granted.");
                     return;
                 } else {
-                    System.out.printf("Incorrect code, please try again. You have %d more tries.\n", tries-1);
+                    System.out.printf("Incorrect code, please try again. You have %d more tries.\n", tries - 1);
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid code format.");
             }
+
             tries--;
         }
+
         isFullTimeLibrarian = false;
         System.out.println("Part-Time Librarian. Limited access granted.");
     }
 
+    /**
+     * Displays the main menu and handles user's chosen operation.
+     */
     private void showMenu() {
         while (true) {
             System.out.println("\n--- Main Menu ---");
@@ -82,6 +109,7 @@ public class Interface {
             System.out.println("3. Checkout Book");
             System.out.println("4. Return Book");
             System.out.println("5. Print All Books List");
+
             if (isFullTimeLibrarian) {
                 System.out.println("6. Add Member");
                 System.out.println("7. Remove Member");
@@ -91,8 +119,10 @@ public class Interface {
                 System.out.println("11. View Operating Balance");
                 System.out.println("12. View Purchased Books & Salary");
             }
+
             System.out.println("0. Exit");
             System.out.print("Select an option: ");
+
             int option = Integer.parseInt(scanner.nextLine());
 
             switch (option) {
@@ -117,6 +147,9 @@ public class Interface {
         }
     }
 
+    /**
+     * Ensures only full-time librarians can perform specific actions.
+     */
     private void checkFullTime(Runnable action) {
         if (isFullTimeLibrarian) {
             action.run();
@@ -125,6 +158,7 @@ public class Interface {
         }
     }
 
+    /** Handles adding a new book to the library. */
     private void addBook() {
         System.out.println("Enter Book Title:");
         String title = scanner.nextLine();
@@ -142,10 +176,12 @@ public class Interface {
         System.out.println("Book added successfully.");
     }
 
+    /** Handles removing an existing book by title. */
     private void removeBook() {
         System.out.println("Enter Book Title to Remove:");
         String title = scanner.nextLine();
         Book book = library.findBookIdByName(title);
+
         if (book != null) {
             library.removeBook(book);
             System.out.println("Book removed successfully.");
@@ -154,6 +190,7 @@ public class Interface {
         }
     }
 
+    /** Handles checking out a book for a member. */
     private void checkoutBook() {
         System.out.println("Enter Book Title to Checkout:");
         String title = scanner.nextLine();
@@ -180,6 +217,7 @@ public class Interface {
             if (isFullTimeLibrarian) {
                 System.out.println("Book not found. Would you like to purchase it? (yes/no)");
                 String response = scanner.nextLine();
+
                 if (response.equalsIgnoreCase("yes")) {
                     System.out.println("Enter Author:");
                     String author = scanner.nextLine();
@@ -190,6 +228,7 @@ public class Interface {
                     System.out.println("Enter Genre:");
                     String genre = scanner.nextLine();
                     Book newBook = new Book(title, author, year, isbn, genre, library);
+
                     String result = libraryAccounts.orderBook(currentLibrarianName, newBook);
                     if (result != null) {
                         library.addBook(newBook);
@@ -206,6 +245,7 @@ public class Interface {
         }
     }
 
+    /** Handles returning a book to the library. */
     private void returnBook() {
         System.out.println("Enter Book Title:");
         String bookName = scanner.nextLine().trim().toLowerCase();
@@ -213,14 +253,14 @@ public class Interface {
 
         if (book != null) {
             library.returnBook(book);
-            book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(true),
-                    Optional.empty());
+            book.updateBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(true), Optional.empty());
             System.out.println("Book returned successfully.");
         } else {
             System.out.println("Book not found.");
         }
     }
 
+    /** Prints out a list of all book titles in the library. */
     private void printAllBookNames() {
         System.out.println("Printing all books\n");
         List<Book> allBooks = library.getAllBooks();
@@ -230,6 +270,7 @@ public class Interface {
         System.out.println();
     }
 
+    /** Adds a new member to the library. */
     private void addMember() {
         System.out.println("Enter Member Name:");
         String name = scanner.nextLine();
@@ -239,12 +280,14 @@ public class Interface {
         System.out.println("Member added successfully. ID: " + member.getMemberId());
     }
 
+    /** Removes a member from the library. */
     private void removeMember() {
         System.out.println("Enter Member Name:");
         String name = scanner.nextLine();
         System.out.println("Enter Member ID:");
         int id = Integer.parseInt(scanner.nextLine());
         Member member = library.getMember(name, id);
+
         if (member != null) {
             library.removeMember(member);
             System.out.println("Member removed successfully.");
@@ -253,10 +296,12 @@ public class Interface {
         }
     }
 
+    /** Displays detailed information about a specific member. */
     private void printMemberInfo() {
         System.out.println("Enter Member ID:");
         int id = Integer.parseInt(scanner.nextLine().trim());
         Member member = library.getMember(null, id);
+
         if (member != null) {
             member.printMemberInfo();
         } else {
@@ -264,42 +309,48 @@ public class Interface {
         }
     }
 
+    /** Adds a donation amount to the library's operating cash. */
     private void addDonation() {
         System.out.println("Enter donation amount:");
         double amount = Double.parseDouble(scanner.nextLine());
         String result = libraryAccounts.addDonation(amount);
+
         if (result != null) {
             System.out.println(result);
-        }
-        else {
+        } else {
             System.out.println("Donation amount attempted is invalid: " + amount);
         }
     }
 
+    /** Withdraws salary amount for the currently logged-in librarian. */
     private void withdrawSalary() {
         System.out.println("Enter salary amount to withdraw:");
         double amount = Double.parseDouble(scanner.nextLine());
         String result = libraryAccounts.withdrawSalary(currentLibrarianName, amount);
+
         if (result != null) {
             System.out.println(result);
-        }
-        else {
+        } else {
             System.out.println("Salary amount attempted is invalid: " + amount);
         }
     }
 
+    /** Displays the current operating balance of the library. */
     private void viewOperatingBalance() {
         double balance = libraryAccounts.getOperatingCash();
         System.out.println("Current Operating Balance: $" + balance);
     }
 
+    /** Displays the list of books purchased and salary information for the logged-in librarian. */
     private void viewPurchasesAndSalaries() {
         System.out.println("\n--- Librarian Report for " + currentLibrarianName + " ---");
         System.out.println("Total Salary Withdrawn: $" + librarians.getWithdrawnSalary(currentLibrarianName));
         System.out.println("Purchased Books:");
+
         for (Book b : librarians.getListLibrarianPurchasedBooks(currentLibrarianName)) {
             System.out.println("- " + b.getName());
         }
+
         System.out.println("Total Value of Purchased Books: $" + librarians.getLibrarianPurchasedBooksTotalValue(currentLibrarianName));
     }
 }
