@@ -23,7 +23,9 @@ public class BookTest {
 
     @BeforeEach
     void setup() {
-        library = mock(Library.class);
+
+        library = mock(Library.class); // mocking Library
+        when(library.generateBookID()).thenReturn(1); // whenever generateBookID() is called, always return 1
         book = new Book(
                 "The Lion, The Witch, and The Wardrobe",
                 "CS Lewis",
