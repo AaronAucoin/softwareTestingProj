@@ -29,8 +29,9 @@ public class LibrariansTest {
     // declare the variables that will be used for tests
     @BeforeEach
     void setUp() {
-        librarians = new Librarians(); // real instance of librarians class to test on
         library = mock(Library.class); // need to mock this to make Book objects
+        when(library.generateBookID()).thenReturn(1); // mock behavior
+        librarians = new Librarians(); // real instance of librarians class to test on
 
         // two books that we can use to test book purchasing logic
         narniaBook = mock(Book.class);
@@ -92,8 +93,8 @@ Books purchased by librarian: {}
     // these cases are: name of non-existent librarian, or inputting a null authentication code
     @Test
     void testCheckLibrarianAuthenticationCodeNull() {
-        assertNull(librarians.checkLibrarianAuthenticationCode("Bill", new short[]{1,1,1,1,1,1}));
-        assertNull(librarians.checkLibrarianAuthenticationCode("Carol", null));
+        assertFalse(librarians.checkLibrarianAuthenticationCode("Bill", new short[]{1,1,1,1,1,1}));
+        assertFalse(librarians.checkLibrarianAuthenticationCode("Carol", null));
     }
 
     // tests the functionality of adding to and retrieving a librarian's withdrawn salary
@@ -118,7 +119,7 @@ Books purchased by librarian: {}
     @Test
     void testWithdrawnSalaryNull() {
         assertNull(librarians.addWithdrawnSalary("Bill", 1000.0));
-        assertNull(librarians.getWithdrawnSalary("Bill"));
+        assertEquals(-1.0, librarians.getWithdrawnSalary("Bill"));
     }
 
     // tests all Librarian BookPurchasing functionality,
