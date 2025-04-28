@@ -28,6 +28,7 @@ public class InterfaceTest {
     private LibraryAccounts mockLibraryAccounts;
     private Librarians librarians;
 
+
     @BeforeEach
     void setUp() {
         mockLibrary = Mockito.mock(Library.class);
@@ -36,6 +37,7 @@ public class InterfaceTest {
         Scanner scanner = new Scanner(System.in);
     }
 
+    // function for inputting fake strings and getting the result of the interface from that
     private String fakeInput(String fakeInput) {
         // Step 1: Capture output first
         ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
