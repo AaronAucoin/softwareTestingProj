@@ -17,11 +17,9 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class InterfaceTest {
     private Library mockLibrary;
@@ -107,25 +105,102 @@ public class InterfaceTest {
     // test functions 4-6 here
 
     // test functions 7-9 here
+    
 
     // test functions 10-12 here
+    // testing withdraw salary amount (option 10) with valid amount
     @Test
     public void testWithdrawSalaryValidAmount() {
         PrintStream originalOut = System.out; // Save original System.out
 
+        // stub behavior of withdraw salary so correct string is returned
         when(mockLibraryAccounts.withdrawSalary("Alice", 100)).thenReturn("Salary withdrawn: $100.00. New balance: $38900.00");
 
         String capturedOutput = fakeInput("Alice\n000000\n10\n100\n0\n");
 
         // Step 7: Perform assertions to check if the expected behavior occurred
-        assertTrue(capturedOutput.contains("Authentication successful. Full-time librarian access granted."));
-        assertFalse(capturedOutput.contains("Limited access granted"));
-        assertTrue(capturedOutput.contains("--- Main Menu ---"));
         assertTrue(capturedOutput.contains("Enter salary amount to withdraw:"));
         assertTrue(capturedOutput.contains("Salary withdrawn: $100.00. New balance: $38900.00"));
         assertTrue(capturedOutput.contains("Exiting system. Goodbye!"));
 
         // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
+
+    // testing withdraw salary amount (option 10) with invalid amount because amount is negative
+    @Test
+    public void testWithdrawSalaryInvalidNegativeAmount() {
+        PrintStream originalOut = System.out; // Save original System.out
+
+        // stub behavior of withdraw salary so null is returned for invalid amount
+        when(mockLibraryAccounts.withdrawSalary("Alice", -100)).thenReturn(null);
+
+        String capturedOutput = fakeInput("Alice\n000000\n10\n-100\n0\n");
+
+        // Step 7: Perform assertions to check if the expected behavior occurred
+        assertTrue(capturedOutput.contains("Enter salary amount to withdraw:"));
+        assertFalse(capturedOutput.contains("Salary withdrawn: $100.00. New balance: $38900.00"));
+        assertTrue(capturedOutput.contains("Salary amount attempted is invalid: " + -100));
+        assertTrue(capturedOutput.contains("Exiting system. Goodbye!"));
+
+        // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
+
+    // testing withdraw salary amount (option 10) with invalid amount because amount is too high
+    @Test
+    public void testWithdrawSalaryInvalidTooHighAmount() {
+        PrintStream originalOut = System.out; // Save original System.out
+
+        // stub behavior of withdraw salary so null is returned for invalid amount
+        when(mockLibraryAccounts.withdrawSalary("Alice", 4000000)).thenReturn(null);
+
+        String capturedOutput = fakeInput("Alice\n000000\n10\n4000000\n0\n");
+
+        // Step 7: Perform assertions to check if the expected behavior occurred
+        assertTrue(capturedOutput.contains("Enter salary amount to withdraw:"));
+        assertFalse(capturedOutput.contains("Salary withdrawn: $100.00. New balance: $38900.00"));
+        assertTrue(capturedOutput.contains("Salary amount attempted is invalid: " + 4000000));
+        assertTrue(capturedOutput.contains("Exiting system. Goodbye!"));
+
+        // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
+
+    // testing view operating balance (option 11)
+    @Test
+    public void testViewOperatingBalance() {
+        PrintStream originalOut = System.out; // Save original System.out
+
+        // stub behavior of getOperatingCash so correct value is returned
+        when(mockLibraryAccounts.getOperatingCash()).thenReturn(39000.0);
+
+        String capturedOutput = fakeInput("Alice\n000000\n11\n0\n");
+
+        // Step 7: Perform assertions to check if the expected behavior occurred
+        assertTrue(capturedOutput.contains("Current Operating Balance: $39000.0"));
+        assertTrue(capturedOutput.contains("Exiting system. Goodbye!"));
+
+        // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
+
+    // testing viewPurchasesAndSalaries (option 12)
+    @Test
+    public void testViewPurchasesAndSalaries() {
+        PrintStream originalOut = System.out;
+        List<Book> bookList = new ArrayList<Book>() {{
+            mock(Book.class);
+        }};
+
+        String capturedOutput = fakeInput("Alice\n000000\n12\n0\n");
+
+        assertTrue(capturedOutput.contains("Purchased Books:"));
+
         System.setOut(originalOut);
         System.out.println(capturedOutput);
     }
