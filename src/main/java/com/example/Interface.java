@@ -29,7 +29,7 @@ public class Interface {
         System.out.println("Enter Librarian Name:");
         String name = scanner.nextLine();
         System.out.println("Enter 6-digit Authentication Code (separate digits with space, or type 0 for part-time):");
-        String[] codeInput = scanner.nextLine().split("");
+        String[] codeInput = scanner.nextLine().split(" ");
 
         if (codeInput.length == 6) {
             short[] authCode = new short[6];
