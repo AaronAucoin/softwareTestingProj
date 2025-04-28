@@ -101,6 +101,56 @@ public class InterfaceTest {
     // test any more log in stuff here
 
     // test functions 1-3 here
+    // Test adding Book function
+    @Test
+    public void testAddBook() {
+        PrintStream originalOut = System.out;
+        String input = "Alice\n000000\n1\nTest Book\nTest Author\n2024\n1234567890\nFantasy\n0\n";
+        String capturedOutput = fakeInput(input);
+
+        // Verify output
+        assertTrue(capturedOutput.contains("Book added successfully."));
+        assertTrue(capturedOutput.contains("--- Main Menu ---"));
+
+        System.setOut(originalOut);
+    }
+    // removing book
+    @Test
+    public void testRemoveBook() {
+        PrintStream originalOut = System.out;
+
+        // First, manually add a book so it exists
+        Book book = new Book("Test Book", "Test Author", 2024, "1234567890", "Fantasy", library);
+        library.addBook(book);
+
+        // Simulate: login, option 2 (remove book), provide the title, then exit
+        String input = "Alice\n000000\n2\nTest Book\n0\n";
+        String capturedOutput = fakeInput(input);
+
+        assertTrue(capturedOutput.contains("Book removed successfully.")
+                || capturedOutput.contains("Book test book has been removed"));
+
+        System.setOut(originalOut);
+    }
+    // then checking out the book
+    @Test
+    public void testCheckoutBook() {
+        PrintStream originalOut = System.out;
+
+        // Setup: Add a book and a member first
+        Book book = new Book("Test Book", "Test Author", 2024, "1234567890", "Fantasy", library);
+        library.addBook(book);
+        Member member = library.addMember("John Doe", "john@example.com");
+
+        // Simulate: login, checkout option, title + member ID, then exit
+        String input = "Alice\n000000\n3\nTest Book\n" + member.getMemberId() + "\n0\n";
+        String capturedOutput = fakeInput(input);
+
+        assertTrue(capturedOutput.contains("Book checked out successfully.") || capturedOutput.contains("Book checked out"));
+
+        System.setOut(originalOut);
+    }
+
 
     // test functions 4-6 here
 
