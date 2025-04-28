@@ -78,6 +78,7 @@ public class InterfaceTest {
         assertFalse(capturedOutput.contains("Authentication successful. Full-time librarian access granted."));
         assertTrue(capturedOutput.contains("Limited access granted"));
         assertTrue(capturedOutput.contains("--- Main Menu ---"));
+        assertTrue(capturedOutput.contains("Exiting system. Goodbye!"));
 
         // Step 8: Restore original System.out to prevent side effects on other tests
         System.setOut(originalOut);
@@ -108,4 +109,24 @@ public class InterfaceTest {
     // test functions 7-9 here
 
     // test functions 10-12 here
+    @Test
+    public void testWithdrawSalaryValidAmount() {
+        PrintStream originalOut = System.out; // Save original System.out
+
+        when(mockLibraryAccounts.withdrawSalary("Alice", 100)).thenReturn("Salary withdrawn: $100.00. New balance: $38900.00");
+
+        String capturedOutput = fakeInput("Alice\n000000\n10\n100\n0\n");
+
+        // Step 7: Perform assertions to check if the expected behavior occurred
+        assertTrue(capturedOutput.contains("Authentication successful. Full-time librarian access granted."));
+        assertFalse(capturedOutput.contains("Limited access granted"));
+        assertTrue(capturedOutput.contains("--- Main Menu ---"));
+        assertTrue(capturedOutput.contains("Enter salary amount to withdraw:"));
+        assertTrue(capturedOutput.contains("Salary withdrawn: $100.00. New balance: $38900.00"));
+        assertTrue(capturedOutput.contains("Exiting system. Goodbye!"));
+
+        // Step 8: Restore original System.out to prevent side effects on other tests
+        System.setOut(originalOut);
+        System.out.println(capturedOutput);
+    }
 }
