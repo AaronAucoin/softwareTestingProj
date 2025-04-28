@@ -11,6 +11,12 @@ public class LibraryAccounts {
         this.librarians = librarians;
     }
 
+    // returns the librarians class associated with this Library Accounts
+    // useful for ensuring that correct instance of librarians is used when creating an interface instance
+    public Librarians getLibrarians() {
+        return librarians;
+    }
+
     // donations of money can be added
     // returns a string describing the money added and the new balance
     // returns null if a negative amount of money tries to be donated

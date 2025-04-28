@@ -1,95 +1,80 @@
 package com.example;
 
-import com.example.Librarians;
-import com.example.LibraryAccounts;
-import com.example.Purchasing;
-import com.example.Library;
-import com.example.Book;
-import com.example.Member;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 public class Interface {
-    private static Library library = new Library();
-    private static Purchasing purchasing = new Purchasing();
-    private static Librarians librarians = new Librarians();
-    private static LibraryAccounts libraryAccounts = new LibraryAccounts(purchasing, librarians);
-    private static Scanner scanner = new Scanner(System.in);
+    private final Library library;
+    private final LibraryAccounts libraryAccounts;
+    private final Librarians librarians;
+    private final Scanner scanner;
 
-    private static boolean isFullTimeLibrarian = false;
-    private static String currentLibrarianName = "";
+    private boolean isFullTimeLibrarian = false;
+    private String currentLibrarianName = "";
 
-    // puts some members and book objects into the library
-    private static void loadSomeStuff() {
-        // create member John Smith with should be ID 0
-        String name = "Smith, John"; String email = "john.smith@gmail.com";
-        library.addMember(name, email);
-        // create member Jessica Rabbit with should be ID 1
-        name = "Rabbit, Jessica"; email = "jessica.rabbit@i<3carrots.com";
-        library.addMember(name, email);
-        // put book Harry Potter into library
-        library.addBook(new Book("Harry Potter", "JK Rowling", 2001, "7483902", "Fantasy", library));
-        // put the hobbit into library
-        library.addBook(new Book("The Hobbit", "JRR Tolkien", 1955, "57849345", "Fantasy", library));
+    public Interface(Library library, LibraryAccounts libraryAccounts, Librarians librarians, Scanner scanner) {
+        this.library = library;
+        this.libraryAccounts = libraryAccounts;
+        this.librarians = librarians;
+        this.scanner = scanner;
     }
 
-    public static void loadInterface() {
+    public void loadInterface() {
         loadSomeStuff();
         System.out.println("Welcome to the Library Management System");
         authenticateLibrarian();
         showMenu();
     }
 
-    private static void authenticateLibrarian() {
+    private void loadSomeStuff() {
+        library.addMember("Smith, John", "john.smith@gmail.com");
+        library.addMember("Rabbit, Jessica", "jessica.rabbit@i<3carrots.com");
+        library.addBook(new Book("Harry Potter", "JK Rowling", 2001, "7483902", "Fantasy", library));
+        library.addBook(new Book("The Hobbit", "JRR Tolkien", 1955, "57849345", "Fantasy", library));
+    }
+
+    private void authenticateLibrarian() {
         int tries = 3;
         System.out.println("Enter Librarian Name:");
         String name = scanner.nextLine();
         while (tries > 0) {
-            // if the name is not a valid librarian we know they can't be full time
             if (!librarians.getLibrariansNames().contains(name)) {
                 break;
             }
             System.out.println("Enter 6-digit Authentication Code (separate digits with space, or type 0 for part-time):");
             String[] codeInput = scanner.nextLine().split("");
             if (Integer.parseInt(codeInput[0]) == 0 && codeInput.length == 1) {
-                // Part-time
                 break;
             }
-            else {
-                short[] authCode = new short[6];
-                if (codeInput.length != 6) {
+            short[] authCode = new short[6];
+            if (codeInput.length != 6) {
+                System.out.printf("Incorrect code, please try again. You have %d more tries.\n", tries-1);
+                tries--;
+                continue;
+            }
+            try {
+                for (int i = 0; i < 6; i++) {
+                    authCode[i] = Short.parseShort(codeInput[i]);
+                }
+                if (librarians.checkLibrarianAuthenticationCode(name, authCode)) {
+                    isFullTimeLibrarian = true;
+                    currentLibrarianName = name;
+                    System.out.println("Authentication successful. Full-time librarian access granted.");
+                    return;
+                } else {
                     System.out.printf("Incorrect code, please try again. You have %d more tries.\n", tries-1);
-                    tries--;
-                    continue;
                 }
-                try {
-                    for (int i = 0; i < 6; i++) {
-                        authCode[i] = Short.parseShort(codeInput[i]);
-                    }
-                    if (librarians.checkLibrarianAuthenticationCode(name, authCode)) {
-                        isFullTimeLibrarian = true;
-                        currentLibrarianName = name;
-                        System.out.println("Authentication successful. Full-time librarian access granted.");
-                        return;
-                    }
-                    else {
-                        System.out.printf("Incorrect code, please try again. You have %d more tries.\n", tries-1);
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid code format.");
-                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid code format.");
             }
             tries--;
         }
-
-        // Part-time fallback
         isFullTimeLibrarian = false;
         System.out.println("Part-Time Librarian. Limited access granted.");
     }
 
-    private static void showMenu() {
+    private void showMenu() {
         while (true) {
             System.out.println("\n--- Main Menu ---");
             System.out.println("1. Add Book");
@@ -116,34 +101,13 @@ public class Interface {
                 case 3 -> checkoutBook();
                 case 4 -> returnBook();
                 case 5 -> printAllBookNames();
-                case 6 -> {
-                    if (isFullTimeLibrarian) addMember();
-                    else System.out.println("Access Denied: Only full-time librarians can add members.");
-                }
-                case 7 -> {
-                    if (isFullTimeLibrarian) removeMember();
-                    else System.out.println("Access Denied: Only full-time librarians can remove members.");
-                }
-                case 8 -> {
-                    if (isFullTimeLibrarian) printMemberInfo();
-                    else System.out.println("Access Denied: Only full-time librarians can remove members.");
-                }
-                case 9 -> {
-                    if (isFullTimeLibrarian) addDonation();
-                    else System.out.println("Access Denied: Only full-time librarians can manage donations.");
-                }
-                case 10 -> {
-                    if (isFullTimeLibrarian) withdrawSalary();
-                    else System.out.println("Access Denied: Only full-time librarians can withdraw salary.");
-                }
-                case 11 -> {
-                    if (isFullTimeLibrarian) viewOperatingBalance();
-                    else System.out.println("Access Denied: Only full-time librarians can view balance.");
-                }
-                case 12 -> {
-                    if (isFullTimeLibrarian) viewPurchasesAndSalaries();
-                    else System.out.println("Access Denied: Only full-time librarians can view records.");
-                }
+                case 6 -> checkFullTime(this::addMember);
+                case 7 -> checkFullTime(this::removeMember);
+                case 8 -> checkFullTime(this::printMemberInfo);
+                case 9 -> checkFullTime(this::addDonation);
+                case 10 -> checkFullTime(this::withdrawSalary);
+                case 11 -> checkFullTime(this::viewOperatingBalance);
+                case 12 -> checkFullTime(this::viewPurchasesAndSalaries);
                 case 0 -> {
                     System.out.println("Exiting system. Goodbye!");
                     return;
@@ -153,7 +117,15 @@ public class Interface {
         }
     }
 
-    private static void addBook() {
+    private void checkFullTime(Runnable action) {
+        if (isFullTimeLibrarian) {
+            action.run();
+        } else {
+            System.out.println("Access Denied: Only full-time librarians can perform this action.");
+        }
+    }
+
+    private void addBook() {
         System.out.println("Enter Book Title:");
         String title = scanner.nextLine();
         System.out.println("Enter Book Author:");
@@ -170,7 +142,7 @@ public class Interface {
         System.out.println("Book added successfully.");
     }
 
-    private static void removeBook() {
+    private void removeBook() {
         System.out.println("Enter Book Title to Remove:");
         String title = scanner.nextLine();
         Book book = library.findBookIdByName(title);
@@ -182,7 +154,7 @@ public class Interface {
         }
     }
 
-    private static void checkoutBook() {
+    private void checkoutBook() {
         System.out.println("Enter Book Title to Checkout:");
         String title = scanner.nextLine();
         Book book = library.findBookIdByName(title);
@@ -234,12 +206,10 @@ public class Interface {
         }
     }
 
-    public static void returnBook() {
-        String bookName;
-        Book book;
+    private void returnBook() {
         System.out.println("Enter Book Title:");
-        bookName = scanner.nextLine().trim().toLowerCase();
-        book = library.findBookIdByName(bookName);
+        String bookName = scanner.nextLine().trim().toLowerCase();
+        Book book = library.findBookIdByName(bookName);
 
         if (book != null) {
             library.returnBook(book);
@@ -251,7 +221,7 @@ public class Interface {
         }
     }
 
-    public static void printAllBookNames() {
+    private void printAllBookNames() {
         System.out.println("Printing all books\n");
         List<Book> allBooks = library.getAllBooks();
         for (Book book : allBooks) {
@@ -260,7 +230,7 @@ public class Interface {
         System.out.println();
     }
 
-    private static void addMember() {
+    private void addMember() {
         System.out.println("Enter Member Name:");
         String name = scanner.nextLine();
         System.out.println("Enter Member Email:");
@@ -269,7 +239,7 @@ public class Interface {
         System.out.println("Member added successfully. ID: " + member.getMemberId());
     }
 
-    private static void removeMember() {
+    private void removeMember() {
         System.out.println("Enter Member Name:");
         String name = scanner.nextLine();
         System.out.println("Enter Member ID:");
@@ -283,7 +253,7 @@ public class Interface {
         }
     }
 
-    private static void printMemberInfo() {
+    private void printMemberInfo() {
         System.out.println("Enter Member ID:");
         int id = Integer.parseInt(scanner.nextLine().trim());
         Member member = library.getMember(null, id);
@@ -294,7 +264,7 @@ public class Interface {
         }
     }
 
-    private static void addDonation() {
+    private void addDonation() {
         System.out.println("Enter donation amount:");
         double amount = Double.parseDouble(scanner.nextLine());
         String result = libraryAccounts.addDonation(amount);
@@ -303,7 +273,7 @@ public class Interface {
         }
     }
 
-    private static void withdrawSalary() {
+    private void withdrawSalary() {
         System.out.println("Enter salary amount to withdraw:");
         double amount = Double.parseDouble(scanner.nextLine());
         String result = libraryAccounts.withdrawSalary(currentLibrarianName, amount);
@@ -312,12 +282,12 @@ public class Interface {
         }
     }
 
-    private static void viewOperatingBalance() {
+    private void viewOperatingBalance() {
         double balance = libraryAccounts.getOperatingCash();
         System.out.println("Current Operating Balance: $" + balance);
     }
 
-    private static void viewPurchasesAndSalaries() {
+    private void viewPurchasesAndSalaries() {
         System.out.println("\n--- Librarian Report for " + currentLibrarianName + " ---");
         System.out.println("Total Salary Withdrawn: $" + librarians.getWithdrawnSalary(currentLibrarianName));
         System.out.println("Purchased Books:");
