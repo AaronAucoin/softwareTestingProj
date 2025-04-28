@@ -14,7 +14,6 @@ All main source code is located in the src/main/... directory.
 Project configuration files (e.g., pom.xml for Maven) are at the root.
 All test source code is located in the src/test/... directory.
 
-Contributors
 
 Notes
 
