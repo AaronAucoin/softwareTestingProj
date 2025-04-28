@@ -2,37 +2,31 @@ package com.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.SyncFailedException;
+import java.io.*;
 import java.util.Scanner;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class InterfaceTest {
     private Library library;
     private LibraryAccounts mockLibraryAccounts;
     private Librarians librarians;
-
+    private InputStream originalIn;
+    private PrintStream originalOut;
+    private Map<Integer, Book> books = new HashMap<>();
 
     @BeforeEach
     void setUp() {
         library = new Library();
-        mockLibraryAccounts = Mockito.mock(LibraryAccounts.class);
+        mockLibraryAccounts = mock(LibraryAccounts.class);
         librarians = new Librarians();
-        Scanner scanner = new Scanner(System.in);
+        originalIn = System.in;
+        originalOut = System.out;
     }
 
     // function for inputting fake input strings and getting the result of the interface from that
@@ -142,17 +136,79 @@ public class InterfaceTest {
         library.addBook(book);
         Member member = library.addMember("John Doe", "john@example.com");
 
-        // Simulate: login, checkout option, title + member ID, then exit
-        String input = "Alice\n000000\n3\nTest Book\n" + member.getMemberId() + "\n0\n";
+        // Corrected fake input
+        String input = String.join("\n",
+                "Alice",                       // librarian name
+                "000000",                      // auth code
+                "3",                           // checkout book
+                "Test Book",                   // book title
+                "John Doe",                    // member name
+                String.valueOf(member.getMemberId()),  // member id
+                "0"                            // exit
+        );
         String capturedOutput = fakeInput(input);
 
-        assertTrue(capturedOutput.contains("Book checked out successfully.") || capturedOutput.contains("Book checked out"));
+        assertTrue(capturedOutput.contains("Book checked out successfully."), "Captured output should contain expected checkout message.");
 
         System.setOut(originalOut);
     }
 
 
-    // test functions 4-6 here
+// test functions 4-6 here
+    public boolean returnBook(int bookId) {
+        Book book = books.get(bookId);
+        if (book == null || book.checkAvailability()) {
+            return false;
+        }
+        Member member = book.getBorrowedBy();
+        if (member == null) {
+            return false;
+        }
+        member.removeBorrowedBook(book);
+        book.updateBook(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(true), // mark available
+                Optional.empty()
+        );
+        return true;
+    }
+
+
+
+    // testing printAllBooksList (option 5)
+    @Test
+    public void testPrintAllBooksList() {
+        PrintStream originalOut = System.out;
+
+        // Setup: Add a book
+        Book book = new Book("Sample Book", "Sample Author", 2024, "9876543210", "Science", library);
+        library.addBook(book);
+
+        // Simulate: login fulltime, select 5 to print all books, then exit
+        String input = "Alice\n000000\n5\n0\n";
+        String capturedOutput = fakeInput(input);
+
+        assertTrue(capturedOutput.contains("Sample Book"), "Should print the book name in the list");
+
+        System.setOut(originalOut);
+    }
+
+    // testing addMember (option 6)
+    @Test
+    public void testAddMember() {
+        PrintStream originalOut = System.out;
+
+        // Simulate: login fulltime, select 6 to add member, input name/email, then exit
+        String input = "Alice\n000000\n6\nJohn Doe\njohn@example.com\n0\n";
+        String capturedOutput = fakeInput(input);
+
+        assertTrue(capturedOutput.contains("Member added successfully."), "Should confirm member added");
+
+        System.setOut(originalOut);
+    }
 
     // test functions 7-9 here
     // testing function removeMember (option 7)

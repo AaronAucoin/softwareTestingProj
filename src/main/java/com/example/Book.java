@@ -12,6 +12,7 @@ public class Book {
     // false means a book is currently loaned to a member and is not available to be loaned
     private boolean isAvailable;
     private String genre; //genre of the book
+    private Member borrowedBy = null;
 
     // constructor for a Book object
     // creates its own unique bookID so librarian doesn't need to worry about that
@@ -29,6 +30,15 @@ public class Book {
     // could MAYBE be modified to only require a book's name instead of object
     public boolean checkAvailability() {
         return isAvailable;
+    }
+    public Member getBorrowedBy() {
+        return borrowedBy;
+    }
+
+    public void checkoutBook(Member member) {
+        this.isAvailable = false;
+        this.borrowedBy = member; // store the whole member
+        member.addBorrowedBook(this);
     }
 
     // Returns a book objects title
@@ -75,4 +85,6 @@ public class Book {
         bookInfo.add(this.genre);
         return bookInfo;
     }
+
+
 }
