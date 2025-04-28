@@ -99,7 +99,7 @@ public class LibraryAccountsTest {
     // assert that null is returned when trying to order a negative cost book
     // verify that purchase book is not called when attempting to purchase a negative cost book
     @Test
-    void testOrderBookCostNegative(){
+    void testOrderBookCostZeoOrNegative(){
         when(mockPurchasing.generateRandomBookCost()).thenReturn(0.0);
         String result = libraryAccounts.orderBook(librarianName, mockBook);
         assertNull(result);
