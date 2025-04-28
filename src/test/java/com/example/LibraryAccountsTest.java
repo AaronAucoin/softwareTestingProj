@@ -21,10 +21,12 @@ public class LibraryAccountsTest {
 
     @BeforeEach
     void setUp() {
+        //create mock classes of all related classes
         mockPurchasing = Mockito.mock(Purchasing.class);
         mockLibrarians = Mockito.mock(Librarians.class);
         libraryAccounts = new LibraryAccounts(mockPurchasing, mockLibrarians);
         mockBook = Mockito.mock(Book.class);
+        //stub so getName() always return "The Hobbit". Easier than calling every test;
         when(mockBook.getName()).thenReturn("The Hobbit");
     }
 
@@ -39,6 +41,7 @@ public class LibraryAccountsTest {
         assertTrue(result.contains("Donation of $1000.00"));//ensure that the result contains the proper amount of money donated
     }
 
+    //Make sure that donations < 0 will return NULL;
     @Test
     void invalidDonation(){
         String result = libraryAccounts.addDonation(-1);
@@ -53,6 +56,8 @@ public class LibraryAccountsTest {
         String result = libraryAccounts.withdrawSalary(librarianName, 5000.00);
         assertNotNull(result);
         assertTrue(result.contains("Salary withdrawn: $5000.00"));
+
+        //mock correct librarian name and amount were called in function;
         verify(mockLibrarians).addWithdrawnSalary(librarianName, 5000.00);
     }
 
@@ -60,7 +65,10 @@ public class LibraryAccountsTest {
     @Test
     void withdrawSalaryInvalidNegative(){
         String result = libraryAccounts.withdrawSalary(librarianName, -5000.00);
+        //function returns NULL;
         assertNull(result);
+
+        //mock to ensure that addWithdrawSalary() was never called given these args
         verify(mockLibrarians, never()).addWithdrawnSalary(librarianName, -5000.00);
     }
 
@@ -69,6 +77,8 @@ public class LibraryAccountsTest {
     void withdrawSalaryInvalidTooMuch(){
         String result = libraryAccounts.withdrawSalary(librarianName, 1000000.00);
         assertNull(result);
+
+        //mock function to ensure that the correct args were passed
         verify(mockLibrarians, never()).addWithdrawnSalary(librarianName, 1000000.00);
     }
 
